@@ -1,4 +1,5 @@
 "use client";
+import { useEffect, useState } from "react";
 import { createBrowserClient } from "@supabase/ssr";
 
 export const supabase = createBrowserClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!);
@@ -17,3 +18,10 @@ export async function api<T = any>(path: string, init?: { method?: string; body?
 
 export const qs = (o: Record<string, string | number | undefined>) =>
   new URLSearchParams(Object.entries(o).filter(([, v]) => v !== undefined && v !== "").map(([k, v]) => [k, String(v)])).toString();
+
+/** Category names from the database, so approved new categories appear in dropdowns. */
+export function useCategories(): string[] {
+  const [items, setItems] = useState<string[]>([]);
+  useEffect(() => { api<{ items: string[] }>("/api/categories").then((r) => setItems(r.items), () => {}); }, []);
+  return items;
+}

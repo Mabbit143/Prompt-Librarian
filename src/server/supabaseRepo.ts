@@ -26,6 +26,8 @@ export class SupabaseRepo implements Repo {
       new Map(cats.map((c) => [c.name as string, c.id as string])), new Map(cats.map((c) => [c.id as string, c.name as string])));
   }
 
+  async categories() { return [...this.catByName.keys()]; }
+
   private fromDb(r: any): RecordRow {
     return {
       id: r.id, originalTitle: r.original_title ?? undefined, originalContent: r.original_content, contentHash: r.content_hash,

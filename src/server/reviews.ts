@@ -1,6 +1,6 @@
 import { z } from "zod";
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { CATEGORIES, RECORD_TYPES } from "../core/taxonomy.js";
+import { RECORD_TYPES } from "../core/taxonomy.js";
 import { HttpError } from "./http.js";
 
 const PROPOSALS = ["uncertain_classification", "potential_duplicate", "title_suggestion", "category_change", "conflicting_metadata", "failed_sync", "new_category"] as const;
@@ -15,7 +15,7 @@ export const ReviewListQuery = z.object({
 export const DecisionBody = z.object({
   decision: z.enum(["approve", "reject", "edit"]),
   change: z.object({
-    category: z.enum(CATEGORIES).optional(),
+    category: z.string().trim().min(1).max(100).optional(),
     record_type: z.enum(RECORD_TYPES).optional(),
     title: z.string().trim().min(1).max(100).optional(),
     relationship_type: z.enum(["exact_duplicate", "near_duplicate", "related", "revision_of", "expands_on", "references", "belongs_to_project"]).optional(),

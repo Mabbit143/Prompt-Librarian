@@ -22,6 +22,8 @@ export interface Repo {
   addRelationship(r: Relationship): Promise<void>;
   addReview(p: ReviewProposal): Promise<void>;
   candidates(text: string): Promise<RecordRow[]>;
+  /** Current category names; omitted by repos that use the seed list. */
+  categories?(): Promise<string[]>;
 }
 export interface ReviewProposal {
   recordId: string; proposalType: "uncertain_classification" | "potential_duplicate" | "new_category";
@@ -75,7 +77,7 @@ export async function capture(input: CaptureInput, d: CaptureDeps): Promise<Capt
   }
 
   const rule = applyRules(norm);
-  const res = await classifyWithRetry(norm, d.model, d.budget, d.estimateUsd);
+  const res = await classifyWithRetry(norm, d.model, d.budget, d.estimateUsd, undefined, await d.repo.categories?.());
   if (res.ok) {
     const c = res.value;
     const disagree = !!rule?.category && rule.category !== c.primary_category;

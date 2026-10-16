@@ -25,6 +25,10 @@ const nullable = (values: readonly string[]) => ({ type: ["string", "null"], enu
 
 // Strict-mode subset (all keys required, additionalProperties:false, optional = union with null; no min/maxLength).
 // classifier_version is added by us, not the model. The Zod schema re-validates everything afterwards.
+export const classificationJsonSchema = (categories: readonly string[]) => ({
+  ...CLASSIFICATION_JSON_SCHEMA,
+  properties: { ...CLASSIFICATION_JSON_SCHEMA.properties, primary_category: { ...CLASSIFICATION_JSON_SCHEMA.properties.primary_category, enum: [...categories] } },
+});
 export const CLASSIFICATION_JSON_SCHEMA = {
   type: "object",
   additionalProperties: false,
@@ -60,7 +64,7 @@ export interface ResponsesClient {
 }
 
 export function openaiClassifier(client: ResponsesClient, model: PricedModel = "gpt-6-luna", effort: "none" | "low" | "medium" = "low"): ModelCall {
-  return async (text) => {
+  return async (text, categories) => {
     const res = await client.responses.create({
       model,
       instructions: INSTRUCTIONS,
@@ -68,7 +72,7 @@ export function openaiClassifier(client: ResponsesClient, model: PricedModel = "
       reasoning: { effort },
       max_output_tokens: MAX_OUTPUT_TOKENS,
       store: false,
-      text: { format: { type: "json_schema", name: "classification", strict: true, schema: CLASSIFICATION_JSON_SCHEMA } },
+      text: { format: { type: "json_schema", name: "classification", strict: true, schema: classificationJsonSchema(categories) } },
     });
     const usage = { inputTokens: res.usage?.input_tokens ?? 0, outputTokens: res.usage?.output_tokens ?? 0 };
     const cost = costUsd(model, usage.inputTokens, usage.outputTokens);

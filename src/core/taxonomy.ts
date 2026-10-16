@@ -9,11 +9,12 @@ export const PROMPT_FAMILIES = ["Utility", "Verification", "Data Enrichment", "O
 // The 35 Output Type values in the user's Prompt Library sheet (2026-10-12 export), most frequent first.
 export const OUTPUT_TYPES = ["Draft", "Template", "Plan", "Design", "Analyze", "Research", "Audit", "Strategy Plan", "Idea", "Workflow", "Prompt Template", "Comparison", "Explanation", "Fragment", "Code", "Content Draft", "Visual Brief", "Edit", "Research Brief", "Checklist", "Idea Generator", "Script", "Organize", "Prompt collection", "Study Guide", "Decision Aid", "Question Set", "Rewrite", "Source collection", "Ideas", "Outline", "Summary", "Email Sequence", "Run workflow", "Rubric"] as const;
 
-export const ClassificationSchema = z.object({
+/** Categories come from the database at call time; CATEGORIES is only the seed and the default for tests. */
+export const makeClassificationSchema = (categories: readonly string[]) => z.object({
   record_type: z.enum(RECORD_TYPES),
   suggested_title: z.string().min(1).max(100),
   // Exactly one approved category: the closest fit. Secondary concepts go in tags/topic_tags.
-  primary_category: z.enum(CATEGORIES),
+  primary_category: z.string().refine((c) => categories.includes(c), "unknown category"),
   // Optional free-text refinement; null rather than invented.
   subcategory: z.string().trim().min(1).max(60).nullable(),
   // Set only when no approved category fits. Never filed automatically: it routes to a human via a new_category review.
@@ -29,4 +30,5 @@ export const ClassificationSchema = z.object({
   classifier_version: z.string().min(1),
 }).strict();
 
+export const ClassificationSchema = makeClassificationSchema(CATEGORIES);
 export type Classification = z.infer<typeof ClassificationSchema>;

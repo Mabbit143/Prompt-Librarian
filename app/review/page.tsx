@@ -1,7 +1,6 @@
 "use client";
 import { useCallback, useEffect, useState } from "react";
-import { api, qs } from "../lib/client";
-import { CATEGORIES } from "../../src/core/taxonomy";
+import { api, qs, useCategories } from "../lib/client";
 
 const TYPE_LABEL: Record<string, string> = {
   uncertain_classification: "Uncertain classification", potential_duplicate: "Potential duplicates", title_suggestion: "Title suggestions",
@@ -10,6 +9,7 @@ const TYPE_LABEL: Record<string, string> = {
 const RELATIONS: [string, string][] = [["near_duplicate", "Confirm near-duplicate"], ["revision_of", "Mark as revision"], ["related", "Mark as related"]];
 
 function Card({ item, onDone }: { item: any; onDone: (id: string, what: string) => void }) {
+  const categories = useCategories();
   const [editing, setEditing] = useState(false);
   const [category, setCategory] = useState<string>(item.proposed?.category ?? "");
   const [title, setTitle] = useState<string>(item.proposed?.title ?? "");
@@ -52,7 +52,7 @@ function Card({ item, onDone }: { item: any; onDone: (id: string, what: string) 
       {editing && !dup && (
         <div className="row">
           <div><label htmlFor={`c${item.id}`}>Category</label>
-            <select id={`c${item.id}`} value={category} onChange={(e) => setCategory(e.target.value)}><option value="">Choose…</option>{CATEGORIES.map((c) => <option key={c}>{c}</option>)}</select></div>
+            <select id={`c${item.id}`} value={category} onChange={(e) => setCategory(e.target.value)}><option value="">Choose…</option>{categories.map((c) => <option key={c}>{c}</option>)}</select></div>
           <div><label htmlFor={`t${item.id}`}>Title (optional)</label><input id={`t${item.id}`} value={title} onChange={(e) => setTitle(e.target.value)} maxLength={100} /></div>
         </div>
       )}

@@ -1,7 +1,6 @@
 "use client";
 import { useCallback, useEffect, useState } from "react";
-import { api, qs } from "../lib/client";
-import { CATEGORIES } from "../../src/core/taxonomy";
+import { api, qs, useCategories } from "../lib/client";
 import RecordDetail from "../components/RecordDetail";
 
 const LIMIT = 20;
@@ -9,6 +8,7 @@ const STATUSES = [["", "Any status"], ["filed", "Filed"], ["needs_review", "Need
 const SOURCES = [["", "Any source"], ["csv", "Spreadsheet import"], ["obsidian", "Obsidian"], ["internal", "Quick Capture"]];
 
 export default function Library() {
+  const categories = useCategories();
   const [f, setF] = useState({ q: "", category: "", status: "", sourceType: "", sort: "newest" });
   const [applied, setApplied] = useState(f);
   const [offset, setOffset] = useState(0);
@@ -41,7 +41,7 @@ export default function Library() {
       <form className="filters" onSubmit={submit} role="search" aria-label="Library search">
         <div className="wide"><label htmlFor="q">Search prompts and ideas</label><input id="q" type="search" value={f.q} onChange={set("q")} placeholder="Words or “an exact phrase”" /></div>
         <div><label htmlFor="cat">Category</label>
-          <select id="cat" value={f.category} onChange={set("category")}><option value="">Any category</option>{CATEGORIES.map((c) => <option key={c}>{c}</option>)}</select></div>
+          <select id="cat" value={f.category} onChange={set("category")}><option value="">Any category</option>{categories.map((c) => <option key={c}>{c}</option>)}</select></div>
         <div><label htmlFor="st">Status</label>
           <select id="st" value={f.status} onChange={set("status")}>{STATUSES.map(([v, l]) => <option key={v} value={v}>{l}</option>)}</select></div>
         <div><label htmlFor="src">Source</label>

@@ -53,6 +53,14 @@ describe("capture", () => {
     const r = await capture({ content: "x y z" }, mk(ok(good({ primary_category: "Made Up" }))));
     expect(r.status).toBe("needs_review");
   });
+  it("a category added after launch is accepted and passed to the model", async () => {
+    const seen: (readonly string[])[] = [];
+    const d = mk(async (_t, cats) => { seen.push(cats); return { json: good({ primary_category: "Anthropology" }), costUsd: 0.0005 }; });
+    d.repo.categories = async () => ["Anthropology", "Writing & Editing"];
+    const r = await capture({ content: "Compare kinship terminologies" }, d);
+    expect(seen[0]).toEqual(["Anthropology", "Writing & Editing"]);
+    expect(r.category).toBe("Anthropology");
+  });
   it("model errors cannot lose the prompt", async () => {
     const d = mk(async () => { throw new Error("boom"); });
     await capture({ content: "keep me" }, d);

@@ -122,3 +122,18 @@ describe("persistent AI budget (ai_usage)", () => {
     expect(del.data ?? []).toHaveLength(0);
   });
 });
+
+describe("search_records (security definer)", () => {
+  it("returns only the caller's records and rejects anonymous callers", async () => {
+    const a = await mkUser(), b = await mkUser();
+    const word = `zyxq${randomUUID().replace(/-/g, "").slice(0, 8)}`;
+    const repo = await SupabaseRepo.init(a.db, a.id);
+    await capture({ content: `unique marker ${word} for search` }, deps(repo));
+    const mine = await a.db.rpc("search_records", { p_query: word });
+    expect(mine.data).toHaveLength(1);
+    const theirs = await b.db.rpc("search_records", { p_query: word });
+    expect(theirs.data).toEqual([]);
+    const anon = createClient(env.NEXT_PUBLIC_SUPABASE_URL!, env.NEXT_PUBLIC_SUPABASE_ANON_KEY!, { auth: { persistSession: false } });
+    expect((await anon.rpc("search_records", { p_query: word })).error).not.toBeNull();
+  });
+});

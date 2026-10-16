@@ -21,3 +21,18 @@
 **Likely fixes for the 100k miss (untested):** rank only a bounded candidate set instead of every match, raise `shared_buffers` to fit the table, index a lighter tsvector (title + first N characters), or cache common queries.
 
 **Side finding:** deleting the 80k synthetic rows ran for 7+ minutes before being cancelled, because several foreign keys (`records.canonical_record_id`, relationships, review items) had no index. Migration 0005 adds them; the same delete then took 5 s.
+
+## Search fix (migration 0006)
+
+**Cause of the 100k miss:** `EXPLAIN (ANALYZE, BUFFERS)` showed a sequential scan of all 100k rows (230 ms for a 7,874-match word, 139 ms for a 467-match phrase). Under RLS the planner may not push `search @@ tsquery` into the GIN index because `ts_match_vq` is not marked leakproof. The same queries without RLS used a bitmap index scan (20 to 26 ms).
+
+**Fix:** `search_records` now runs as SECURITY DEFINER with an explicit `owner_id = auth.uid()` filter, and execute is revoked from `anon`. A DB test confirms another user gets no rows and an anonymous caller is rejected.
+
+| Query (ms), p50 / p95 | Before | After |
+|---|---|---|
+| Keyword search, 100,000 rows (synthetic) | 655 / 831 | **24 / 127** |
+| Keyword search + category filter, 100,000 | 71 / 253 | 16 / 29 |
+| Keyword search, 19,795 real rows | 140 / 170 | 15 / 29 |
+| Browse at 100,000 (unchanged, uses btree, RLS-safe) | 68 / 254 | 67 / 255 |
+
+All queries now meet p95 < 500 ms at 100k in this environment. **Bounded ranking and a lighter tsvector were not tried**: with the index in use, ranking all matches costs about 25 ms, so they would not measurably help. Revisit if matches per query grow by an order of magnitude. Keyword search p99 at 100k is 266 ms.

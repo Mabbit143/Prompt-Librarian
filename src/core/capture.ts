@@ -24,7 +24,7 @@ export interface Repo {
   candidates(text: string): Promise<RecordRow[]>;
 }
 export interface ReviewProposal {
-  recordId: string; proposalType: "uncertain_classification" | "potential_duplicate";
+  recordId: string; proposalType: "uncertain_classification" | "potential_duplicate" | "new_category";
   proposedChange?: Record<string, unknown>; originalValue?: Record<string, unknown>; confidence?: number; reason: string;
 }
 
@@ -79,17 +79,23 @@ export async function capture(input: CaptureInput, d: CaptureDeps): Promise<Capt
   if (res.ok) {
     const c = res.value;
     const disagree = !!rule?.category && rule.category !== c.primary_category;
-    const confident = c.confidence >= d.autoFileMinConfidence && !c.review_required && !disagree;
+    const proposesNew = c.proposed_category !== null;
+    const confident = c.confidence >= d.autoFileMinConfidence && !c.review_required && !disagree && !proposesNew;
     const out: RecordRow = {
       ...row, classification: c, category: c.primary_category,
       filingStatus: confident ? "filed" : "needs_review",
-      reviewReason: confident ? undefined : disagree ? `rule/model disagree (${rule!.rule})` : "low confidence",
+      reviewReason: confident ? undefined
+        : proposesNew ? `no category fits; proposes "${c.proposed_category}"`
+        : disagree ? `rule/model disagree (${rule!.rule})` : "low confidence",
     };
     await d.repo.update(out);
     if (!confident) {
       await d.repo.addReview({
-        recordId: row.id, proposalType: "uncertain_classification", confidence: c.confidence, reason: out.reviewReason!,
-        proposedChange: { category: c.primary_category, record_type: c.record_type, title: c.suggested_title, ...(rule?.category ? { rule_category: rule.category } : {}) },
+        recordId: row.id, proposalType: proposesNew ? "new_category" : "uncertain_classification", confidence: c.confidence, reason: out.reviewReason!,
+        proposedChange: {
+          category: c.primary_category, record_type: c.record_type, title: c.suggested_title,
+          ...(proposesNew ? { proposed_category: c.proposed_category } : {}), ...(rule?.category ? { rule_category: rule.category } : {}),
+        },
         originalValue: { filing_status: "inbox" },
       });
     }

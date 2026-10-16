@@ -11,7 +11,7 @@
         "content": [
           {
             "type": "output_text",
-            "text": "{\"record_type\":\"Prompt\",\"suggested_title\":\"Five-bullet paper summary\",\"primary_category\":\"Research & Analysis\",\"secondary_category\":null,\"prompt_family\":\"Utility\",\"output_type\":\"Research Summary\",\"tags\":[\"summary\"],\"topic_tags\":[\"Research & Evidence\"],\"confidence\":0.93,\"confidence_reason\":\"Clear summarization request\",\"potential_duplicate\":false,\"review_required\":false}"
+            "text": "{\"record_type\":\"Prompt\",\"suggested_title\":\"Five-bullet paper summary\",\"primary_category\":\"Research & Analysis\",\"prompt_family\":\"Utility\",\"output_type\":\"Research Brief\",\"tags\":[\"summary\"],\"topic_tags\":[\"Research & Evidence\"],\"confidence\":0.93,\"confidence_reason\":\"Clear summarization request\",\"potential_duplicate\":false,\"review_required\":false,\"subcategory\":null,\"proposed_category\":null}"
           }
         ]
       }

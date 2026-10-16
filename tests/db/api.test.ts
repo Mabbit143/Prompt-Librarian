@@ -19,7 +19,7 @@ const mkUser = async () => {
 const model: ModelCall = async (t) => ({
   json: {
     record_type: "Prompt", suggested_title: `Title ${t.slice(0, 20)}`, primary_category: t.includes("ledger") ? "Finance & Money" : "Writing & Editing",
-    secondary_category: null, prompt_family: null, output_type: null, tags: [], topic_tags: [], confidence: t.includes("shaky") ? 0.3 : 0.95,
+    subcategory: null, proposed_category: null, prompt_family: null, output_type: null, tags: [], topic_tags: [], confidence: t.includes("shaky") ? 0.3 : 0.95,
     confidence_reason: "x", potential_duplicate: false, review_required: false, classifier_version: "v1",
   }, costUsd: 0,
 });

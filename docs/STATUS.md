@@ -28,12 +28,19 @@ Input: `Downloads\Prompt Library - Prompt Library.csv`, an export dated 2026-10-
 - 19 existing categories; only "Prompt Engineering" matches the provisional taxonomy. Largest: Writing & Editing 7,289; E-commerce 2,569; Business Strategy 1,240; Audio & Video 1,152; Teaching & Learning 974; Relationships & Parenting 935; Travel & Events 767; Design & Visuals 711; Prompt Engineering 669; Home & Lifestyle 640; Marketing & Sales 583; Health & Wellbeing 518; Creative Writing 415; Finance & Money 380; Social Media 366; Productivity & Systems 274; Research & Analysis 234; Coding & Data 43; Career & Freelancing 36.
 - Consequence: the spec's subject categories (Anthropology, Public Policy, etc.) are not the user's current scheme. Before any auto-filing, seed `categories` from these 19 (plus the Category Guide tab) and decide how the spec's labels map onto them.
 
+## Taxonomy v2 changes (2026-10-16)
+
+- New category proposals: approving a `new_category` item creates the category in Postgres and files the record; rejecting or choosing an existing category leaves the taxonomy unchanged (migration 0008, tested). **Limitation:** the classifier's allowed list and the UI dropdowns are still the static 19, so an approved new category exists in the database but the model cannot yet choose it. Dynamic taxonomy loading is the next fix.
+- Identity normalization is now NFC + line endings + surrounding whitespace only (was also internal space runs and blank-line runs). `scripts/rehash.ts` recomputed stored hashes for the local test user: 169 of 19,806 changed, no collisions, original text untouched. Any other database must run the same rehash before relying on duplicate detection.
+- Presentational Markdown is not stripped before hashing (the skill allows it; not implemented).
+- Not changed: title length (still up to 100 characters, prompt asks for 3 to 7 words), tag counts, Prompt Family, destination routing and Notion preview/readback.
+
 ## Build state
 
 | Item | State |
 |---|---|
 | Normalization, hashing, near-dup similarity | done, tested |
-| Taxonomy schema (strict Zod) | done, seeded from the 19 existing categories; spec labels are optional topic tags |
+| Taxonomy schema (strict Zod) | done, v2 (reconciled with the vault's `classify-prompts-ideas` skill): 19 existing categories, record types incl. Mixed, 35 real Output Type values from the sheet, `subcategory` (optional) replaces `secondary_category`, `proposed_category` routes to a `new_category` review (never auto-filed); spec labels are optional topic tags. Prompt Family list is still the spec's (the sheet has no such column; Notion's own options not yet read) |
 | Deterministic rules | done, 5 placeholder rules (2 assert a category, 3 add topic tags only) |
 | Classifier retry + validation + budget reservation | done, tested with a fake model |
 | Capture pipeline (save-first, exact dup, near-dup flag, review routing) | done, in-memory repo, 10 tests pass |

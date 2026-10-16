@@ -22,7 +22,7 @@ export default async function globalSetup() {
     const confident = t.includes("[sure]");
     return { json: {
       record_type: "Prompt", suggested_title: t.includes("[sure]") ? "Weekly meal planner" : "Product naming brainstorm",
-      primary_category: t.includes("[sure]") ? "Home & Lifestyle" : "Marketing & Sales", secondary_category: null, prompt_family: null,
+      primary_category: t.includes("[sure]") ? "Home & Lifestyle" : "Marketing & Sales", subcategory: null, proposed_category: null, prompt_family: null,
       output_type: null, tags: [], topic_tags: [], confidence: confident ? 0.95 : 0.4, confidence_reason: "fixture", potential_duplicate: false,
       review_required: false, classifier_version: "e2e-v1" }, costUsd: 0 };
   };

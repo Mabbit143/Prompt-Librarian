@@ -1,15 +1,12 @@
 import { createHash } from "node:crypto";
 
-/** Conservative normalization: line endings, trailing spaces, blank-line runs. Case and wording are untouched. */
+/**
+ * Identity normalization for exact-duplicate checks: Unicode NFC, line endings, and surrounding whitespace only.
+ * Wording, case, internal spacing and Markdown are untouched (classify-prompts-ideas: "may ignore surrounding
+ * whitespace and purely presentational Markdown, but not wording"). Presentational Markdown is not stripped.
+ */
 export function normalizeContent(text: string): string {
-  return text
-    .normalize("NFC")
-    .replace(/\r\n?/g, "\n")
-    .split("\n")
-    .map((l) => l.replace(/[ \t]+$/g, "").replace(/[ \t]{2,}/g, " "))
-    .join("\n")
-    .replace(/\n{3,}/g, "\n\n")
-    .trim();
+  return text.normalize("NFC").replace(/\r\n?/g, "\n").trim();
 }
 
 export const contentHash = (text: string): string =>

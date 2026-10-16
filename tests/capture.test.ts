@@ -5,7 +5,7 @@ import type { ModelCall } from "../src/core/classify.js";
 
 const good = (over: object = {}) => ({
   record_type: "Prompt", suggested_title: "Summarize a paper", primary_category: "Research & Analysis",
-  secondary_category: null, prompt_family: "Utility", output_type: "Research Summary", tags: ["summary"],
+  subcategory: null, proposed_category: null, prompt_family: "Utility", output_type: "Research Brief", tags: ["summary"],
   topic_tags: ["papers"], confidence: 0.95, confidence_reason: "clear", potential_duplicate: false,
   review_required: false, classifier_version: "v1", ...over,
 });
@@ -109,5 +109,32 @@ describe("review proposals", () => {
     const d = mk(async () => { throw new Error("x"); });
     await capture({ content: "keep me" }, d);
     expect(d.repo.reviews).toMatchObject([{ proposalType: "uncertain_classification", reason: "classifier error", proposedChange: undefined }]);
+  });
+});
+
+describe("taxonomy v2", () => {
+  it("accepts Mixed and the real sheet output types; rejects the old secondary_category", async () => {
+    const { ClassificationSchema, OUTPUT_TYPES } = await import("../src/core/taxonomy.js");
+    expect(OUTPUT_TYPES).toHaveLength(35);
+    expect(ClassificationSchema.safeParse(good({ record_type: "Mixed", output_type: "Draft", subcategory: "Blogs & articles" })).success).toBe(true);
+    expect(ClassificationSchema.safeParse(good({ secondary_category: "E-commerce" })).success).toBe(false);
+    expect(ClassificationSchema.safeParse(good({ output_type: "Essay" })).success).toBe(false);
+  });
+  it("a proposed category is never auto-filed and routes to a new_category review", async () => {
+    const d = mk(ok(good({ proposed_category: "Grant Writing", confidence: 0.99 })));
+    const r = await capture({ content: "Draft a grant narrative for a literacy nonprofit" }, d);
+    expect(r.status).toBe("needs_review");
+    expect(r.reason).toContain("Grant Writing");
+    expect(d.repo.reviews).toMatchObject([{ proposalType: "new_category", proposedChange: { proposed_category: "Grant Writing", category: "Research & Analysis" } }]);
+  });
+});
+
+describe("identity normalization", () => {
+  it("ignores line endings and surrounding whitespace only", async () => {
+    const { contentHash } = await import("../src/core/normalize.js");
+    expect(contentHash("  a\r\nb  \n")).toBe(contentHash("a\nb"));
+    expect(contentHash("a  b")).not.toBe(contentHash("a b"));
+    expect(contentHash("a\n\n\nb")).not.toBe(contentHash("a\n\nb"));
+    expect(contentHash("a \nb")).not.toBe(contentHash("a\nb"));
   });
 });

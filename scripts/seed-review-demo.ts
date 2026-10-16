@@ -9,7 +9,7 @@ import { localUser } from "./localEnv.js";
 const model: ModelCall = async (t) => {
   if (t.includes("[fail]")) throw new Error("down");
   return { json: { record_type: "Prompt", suggested_title: t.includes("itinerary") ? "Weekend trip itinerary planner" : "Brainstorm product names", primary_category: t.includes("itinerary") ? "Travel & Events" : "Marketing & Sales",
-    secondary_category: null, prompt_family: null, output_type: null, tags: ["demo"], topic_tags: [], confidence: 0.4, confidence_reason: "ambiguous wording",
+    subcategory: null, proposed_category: null, prompt_family: null, output_type: null, tags: ["demo"], topic_tags: [], confidence: 0.4, confidence_reason: "ambiguous wording",
     potential_duplicate: false, review_required: false, classifier_version: "demo-v1" }, costUsd: 0 };
 };
 const { db, id } = await localUser();

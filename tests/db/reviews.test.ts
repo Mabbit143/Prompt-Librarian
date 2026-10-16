@@ -19,7 +19,7 @@ const mkUser = async () => {
 const model: ModelCall = async (t) => {
   if (t.includes("boom")) throw new Error("model down");
   return { json: {
-    record_type: "Prompt", suggested_title: "Proposed title", primary_category: "Business Strategy", secondary_category: null,
+    record_type: "Prompt", suggested_title: "Proposed title", primary_category: "Business Strategy", subcategory: null, proposed_category: null,
     prompt_family: null, output_type: null, tags: [], topic_tags: [], confidence: t.includes("lowconf") ? 0.3 : 0.95,
     confidence_reason: "x", potential_duplicate: false, review_required: false, classifier_version: "v1" }, costUsd: 0 };
 };
@@ -119,5 +119,47 @@ describe("review queue", () => {
     expect(DecisionBody.safeParse({ decision: "edit", change: { category: "Anthropology" } }).success).toBe(false);
     expect(DecisionBody.safeParse({ decision: "approve", extra: 1 }).success).toBe(false);
     expect(ReviewListQuery.parse({}).status).toBe("pending");
+  });
+});
+
+describe("new_category reviews", () => {
+  const proposing: ModelCall = async (t) => ({ json: {
+    record_type: "Prompt", suggested_title: "Grant narrative helper", primary_category: "Writing & Editing", subcategory: null, proposed_category: t.includes("grant") ? `Grant Writing ${t.slice(-6)}` : null,
+    prompt_family: null, output_type: null, tags: [], topic_tags: [], confidence: 0.97, confidence_reason: "x", potential_duplicate: false, review_required: false, classifier_version: "v1" }, costUsd: 0 });
+  const capGrant = (repo: SupabaseRepo, content: string) =>
+    capture({ content }, { repo, budget: new Budget(5, 3), model: proposing, newId: randomUUID, now: () => new Date().toISOString(), autoFileMinConfidence: 0.85 });
+
+  it("approving creates the category and files the record; the proposal alone creates nothing", async () => {
+    const u = await mkUser();
+    const repo = await SupabaseRepo.init(u.db, u.id);
+    const text = `grant narrative ${randomUUID().slice(0, 6)}`;
+    const r = await capGrant(repo, text);
+    expect(r.status).toBe("needs_review");
+    const q = await listReviews(u.db, ReviewListQuery.parse({ type: "new_category" }));
+    expect(q.pending.new_category).toBe(1);
+    const item = q.items[0]!;
+    const name = (item.proposed as any).proposed_category as string;
+    expect((await u.db.from("categories").select("id").eq("name", name)).data).toHaveLength(0);
+
+    await decideReview(u.db, item.id, DecisionBody.parse({ decision: "approve" }));
+    const cat = await u.db.from("categories").select("id,name").eq("name", name).single();
+    expect(cat.data?.name).toBe(name);
+    const rec = await u.db.from("records").select("filing_status,primary_category_id").eq("id", r.recordId).single();
+    expect(rec.data).toEqual({ filing_status: "filed", primary_category_id: cat.data!.id });
+  });
+
+  it("rejecting leaves taxonomy unchanged; editing files under an existing category", async () => {
+    const u = await mkUser();
+    const repo = await SupabaseRepo.init(u.db, u.id);
+    const a = await capGrant(repo, `grant one ${randomUUID().slice(0, 6)}`);
+    const b = await capGrant(repo, `grant two ${randomUUID().slice(0, 6)}`);
+    const items = (await listReviews(u.db, ReviewListQuery.parse({ type: "new_category" }))).items;
+    const itemA = items.find((i) => i.record!.id === a.recordId)!, itemB = items.find((i) => i.record!.id === b.recordId)!;
+    const before = (await u.db.from("categories").select("id")).data!.length;
+    await decideReview(u.db, itemA.id, DecisionBody.parse({ decision: "reject" }));
+    expect((await decideReview(u.db, itemB.id, DecisionBody.parse({ decision: "edit", change: { category: "Business Strategy" } }))).status).toBe("edited");
+    expect((await u.db.from("categories").select("id")).data!.length).toBe(before);
+    expect((await u.db.from("records").select("filing_status").eq("id", b.recordId).single()).data!.filing_status).toBe("filed");
+    expect((await u.db.from("records").select("filing_status").eq("id", a.recordId).single()).data!.filing_status).toBe("needs_review");
   });
 });

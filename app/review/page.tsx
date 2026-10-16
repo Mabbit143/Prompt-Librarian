@@ -36,7 +36,8 @@ function Card({ item, onDone }: { item: any; onDone: (id: string, what: string) 
         {item.record?.category && <span className="badge">Currently: {item.record.category}</span>}
       </div>
       
-      {!dup && item.proposed?.category && !editing && <p>Suggested: <strong>{item.proposed.category}</strong>{item.proposed.title ? <> titled “{item.proposed.title}”</> : null}</p>}
+      {item.type === "new_category" && item.proposed?.proposed_category && !editing && <p>The classifier found no fitting category and proposes <strong>{item.proposed.proposed_category}</strong>. Closest existing: <strong>{item.proposed.category}</strong>.</p>}
+      {!dup && item.type !== "new_category" && item.proposed?.category && !editing && <p>Suggested: <strong>{item.proposed.category}</strong>{item.proposed.title ? <> titled “{item.proposed.title}”</> : null}</p>}
       {!dup && item.proposed?.rule_category && item.proposed.rule_category !== item.proposed.category && !editing && <p>A filing rule points to <strong>{item.proposed.rule_category}</strong> instead.</p>}
       {!dup && !item.proposed && !editing && <p className="snippet">The classifier gave no suggestion. Choose a category to file it.</p>}
 
@@ -72,7 +73,9 @@ function Card({ item, onDone }: { item: any; onDone: (id: string, what: string) 
           </>
         ) : (
           <>
-            {item.proposed?.category && <button className="primary" disabled={busy} onClick={() => decide({ decision: "approve" }, `Filed under ${item.proposed.category}`)}>File under {item.proposed.category}</button>}
+            {item.type === "new_category" && item.proposed?.proposed_category && <button className="primary" disabled={busy} onClick={() => decide({ decision: "approve" }, `Created “${item.proposed.proposed_category}” and filed it there`)}>Create “{item.proposed.proposed_category}” and file here</button>}
+            {item.type === "new_category" && item.proposed?.category && <button disabled={busy} onClick={() => decide({ decision: "edit", change: { category: item.proposed.category } }, `Filed under ${item.proposed.category}`)}>Use {item.proposed.category} instead</button>}
+            {item.type !== "new_category" && item.proposed?.category && <button className="primary" disabled={busy} onClick={() => decide({ decision: "approve" }, `Filed under ${item.proposed.category}`)}>File under {item.proposed.category}</button>}
             {item.proposed?.rule_category && item.proposed.rule_category !== item.proposed.category && <button disabled={busy} onClick={() => decide({ decision: "edit", change: { category: item.proposed.rule_category } }, `Filed under ${item.proposed.rule_category}`)}>File under {item.proposed.rule_category}</button>}
             <button disabled={busy} onClick={() => setEditing(true)}>{item.proposed?.category ? "Choose a different category" : "Choose a category"}</button>
             <button disabled={busy} onClick={() => decide({ decision: "reject" }, "Left in review")}>Not now</button>

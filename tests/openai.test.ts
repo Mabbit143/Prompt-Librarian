@@ -44,7 +44,9 @@ describe("openai classifier adapter (synthetic fixtures)", () => {
     expect([...s.required].sort()).toEqual(Object.keys(s.properties).sort());
     expect(JSON.stringify(s)).not.toMatch(/minLength|maxLength|allOf|"not"/);
     expect(s.properties.primary_category.enum).toEqual([...CATEGORIES]);
-    expect(s.properties.secondary_category.enum).toContain(null);
+    expect(s.properties).not.toHaveProperty("secondary_category");
+    expect(s.properties.output_type.enum).toContain("Draft");
+    expect(s.properties.proposed_category.type).toEqual(["string", "null"]);
   });
 
   it("estimates a conservative per-call cost well under a cent", () => {

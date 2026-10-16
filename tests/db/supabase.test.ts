@@ -16,7 +16,7 @@ const mkUser = async () => {
   return { db: db as SupabaseClient, id: data.user.id };
 };
 const good = {
-  record_type: "Prompt", suggested_title: "T", primary_category: "Writing & Editing", secondary_category: null, prompt_family: null,
+  record_type: "Prompt", suggested_title: "T", primary_category: "Writing & Editing", subcategory: null, proposed_category: null, prompt_family: null,
   output_type: null, tags: [], topic_tags: [], confidence: 0.95, confidence_reason: "clear", potential_duplicate: false,
   review_required: false, classifier_version: "v1",
 };

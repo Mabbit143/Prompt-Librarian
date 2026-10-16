@@ -8,3 +8,5 @@ supabase/.temp
 supabase/.branches
 .local-bench.json
 .local-obsidian-manifest.json
+test-results
+playwright-report

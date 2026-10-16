@@ -19,3 +19,5 @@
 **Not measured:** concurrent users, semantic (pgvector) search, near-duplicate prefilter at scale, hosted Supabase, cold cache after restart, search over the Purpose/Tags/Search Terms columns (they are stored in `metadata_json` and not indexed).
 
 **Likely fixes for the 100k miss (untested):** rank only a bounded candidate set instead of every match, raise `shared_buffers` to fit the table, index a lighter tsvector (title + first N characters), or cache common queries.
+
+**Side finding:** deleting the 80k synthetic rows ran for 7+ minutes before being cancelled, because several foreign keys (`records.canonical_record_id`, relationships, review items) had no index. Migration 0005 adds them; the same delete then took 5 s.

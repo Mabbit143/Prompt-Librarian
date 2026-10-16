@@ -11,7 +11,7 @@ export interface PreviewDeps {
   now: Date;
   maxSnapshotAgeMs?: number;
 }
-export interface Preview { items: PreviewItem[]; summary: Record<Action, number> }
+export interface Preview { items: PreviewItem[]; summary: Record<Action, number>; builtAt: string }
 
 /**
  * Pure, read-only: decides what WOULD happen for each record. It has no Notion client, so it cannot write.
@@ -45,11 +45,11 @@ export function buildPreview(records: SyncRecord[], d: PreviewDeps): Preview {
     const m = mapToPromptLibrary(r, snap, libraryId);
     if (m.blocked) return item("blocked", m.blocked, { ...at, libraryId, warnings: m.warnings });
     const idempotencyKey = createHash("sha256").update(`${dest.key}:${libraryId}`).digest("hex").slice(0, 32);
-    return item("create", `new ${r.recordType} for ${dest.name}`, { ...at, libraryId, properties: m.properties, warnings: m.warnings, idempotencyKey });
+    return item("create", `new ${r.recordType} for ${dest.name}`, { ...at, libraryId, contentHash: r.contentHash, properties: m.properties, warnings: m.warnings, idempotencyKey });
   });
   const summary = { create: 0, skip_exists: 0, needs_destination_decision: 0, blocked: 0, not_eligible: 0 } as Record<Action, number>;
   for (const i of items) summary[i.action]++;
-  return { items, summary };
+  return { items, summary, builtAt: d.now.toISOString() };
 }
 
 /** The only items a writer may act on, and only after the user approves this exact preview. */

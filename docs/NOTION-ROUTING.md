@@ -34,6 +34,12 @@ Records flow: `filed` Librarian record, then **route**, then **preview**, then (
 
 Provenance and the original text stay in Postgres; Notion is a mirror (as `organize-notion-ideas` requires). Writes are internal to Notion only; nothing flows back into Postgres from Notion edits yet.
 
+## Write executor (`src/notion/execute.ts`)
+
+Built and tested against an in-memory fake only. **There is no real Notion adapter, so nothing in this repository can write to Notion.** To go live someone must implement the two-method `NotionWriter` interface and turn on `writesEnabled`.
+
+Gates, all required for a live run: `dryRun:false` (default is dry run), `writesEnabled:true` (kill switch), an approval whose digest equals the digest of exactly this preview (any change to a payload invalidates it), preview younger than 15 minutes, batch within the limit (default 10, hard cap 50), every destination confirmed. Per item: ledger check, fresh read-only existence check (an unsure answer stops the batch), rate-limited create (350 ms spacing, about 3 per second), read-back comparison. First failure, mismatch or unsure check stops the batch; creates are never retried blindly, and a create that errored after landing is found by the next run's existence check instead of duplicated. `rerunCheck` confirms a fresh preview proposes nothing for what was written.
+
 ## Decisions needed from you
 
 1. ~~Confirm `prompt_library` = Prompt Engineering Dashboard as the destination.~~ Confirmed by the user 2026-10-16 (`confirmed: true`; DA Idea Bank and Ideas stay `false`). Confirming it does not enable writes: there is no executor.
@@ -44,7 +50,8 @@ Provenance and the original text stay in Postgres; Notion is a mirror (as `organ
 
 ## Not built (needed before any write)
 
-- Notion write executor: needs your explicit authorization, rate limiting (about 3 requests per second), per-batch approval of an exact preview, and a small first batch.
+- A real `NotionWriter` adapter (not written, on purpose) and a persistent write ledger (the in-memory one forgets on restart, so a restart falls back to the existence check alone).
+- An approval screen in the Review UI that shows the exact preview and produces the digest.
 - Live existence lookup (`NotionIndex`) by Library ID and text hash.
 - Schema snapshots and mappings for the DA Idea Bank and Ideas inbox (their types and options must be fetched untruncated).
 - Persisting preview, approval and sync results (`sync_runs`) and a Review-queue item type for `needs_destination_decision`.

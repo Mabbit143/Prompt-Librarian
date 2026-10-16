@@ -26,7 +26,7 @@ export type Action = "create" | "skip_exists" | "needs_destination_decision" | "
 export interface Warning { code: string; message: string }
 export interface PreviewItem {
   recordId: string; action: Action; destination?: DestKey; reason: string;
-  properties?: Record<string, unknown>; libraryId?: string; idempotencyKey?: string; warnings: Warning[];
+  properties?: Record<string, unknown>; libraryId?: string; contentHash?: string; idempotencyKey?: string; warnings: Warning[];
   sourceRef: { paths: string[]; urls: string[] };
 }
 

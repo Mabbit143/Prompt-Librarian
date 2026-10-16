@@ -4,7 +4,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { supabase } from "../lib/client";
 
-const LINKS = [["/", "Quick Capture"], ["/library", "Library"], ["/review", "Review"]] as const;
+const LINKS = [["/", "Quick Capture"], ["/library", "Library"], ["/review", "Review"], ["/sync", "Sync"]] as const;
 
 export default function Shell({ children }: { children: React.ReactNode }) {
   const path = usePathname();

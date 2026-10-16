@@ -129,3 +129,12 @@ describe("committed destination config", () => {
     expect(cfg.libraryIdPrefix).toBe("LIBR-");
   });
 });
+
+describe("records that originate from the Notion library", () => {
+  it("are skipped with their Library ID, regardless of lookup answers", () => {
+    const r = rec({ sources: [{ sourceType: "csv", externalId: "STG-015279", path: "Prompt Library!2:2" }] });
+    const p = buildPreview([r], deps({ index: idx("absent") }));
+    expect(p.items[0]).toMatchObject({ action: "skip_exists", libraryId: "STG-015279" });
+    expect(buildPreview([rec({ sources: [{ sourceType: "obsidian", externalId: "obsidian:v:x#1" }] })], deps()).items[0]!.action).toBe("create");
+  });
+});

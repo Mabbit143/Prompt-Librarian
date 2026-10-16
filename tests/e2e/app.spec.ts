@@ -112,3 +112,38 @@ test("the axe check is live: it flags a deliberately inaccessible page", async (
   expect(found.some((v) => v.startsWith("image-alt"))).toBe(true);
   expect(found.some((v) => v.startsWith("button-name"))).toBe(true);
 });
+
+test("sync: read-only preview, explore mode, dry run, and no live write control", async ({ page }) => {
+  await signIn(page);
+  await page.getByRole("link", { name: "Sync" }).click();
+  await expect(page.getByRole("heading", { name: "Notion sync preview" })).toBeVisible();
+  await expect(page.getByText(/Nothing is sent to Notion/)).toBeVisible();
+  await expect(page.getByRole("region", { name: "Destination" })).toContainText("Prompt Engineering Dashboard");
+  await expect(page.getByLabel("Preview digest")).toBeVisible();
+  // Strict mode: nothing can be created without a live Notion lookup and a fresh schema.
+  await expect(page.getByRole("button", { name: /^Would create/ })).toHaveCount(0);
+
+  await page.getByLabel("Explore what the mapping would create").check();
+  const create = page.getByRole("button", { name: /^Would create \(\d+\)/ });
+  await expect(create).toBeVisible();
+  await create.click();
+  const card = page.getByRole("listitem").filter({ hasText: "Weekly meal planner" });
+  await expect(card).toContainText("LIBR-");
+  await expect(card).toContainText("Home & Lifestyle");
+
+  await page.getByRole("button", { name: "Run dry run" }).click();
+  await expect(page.getByRole("status").filter({ hasText: "Nothing was sent to Notion" })).toContainText(/would be created/);
+  // There is no way to write from this page.
+  await expect(page.getByRole("button", { name: /write|send|sync now|approve|publish/i })).toHaveCount(0);
+});
+
+for (const scheme of ["light", "dark"] as const) {
+  test(`accessibility (${scheme}): sync preview`, async ({ page }) => {
+    await page.emulateMedia({ colorScheme: scheme });
+    await signIn(page);
+    await page.getByRole("link", { name: "Sync" }).click();
+    await page.getByLabel("Explore what the mapping would create").check();
+    await expect(page.getByRole("button", { name: /^Would create/ })).toBeVisible();
+    expect(await audit(page), "sync").toEqual([]);
+  });
+}

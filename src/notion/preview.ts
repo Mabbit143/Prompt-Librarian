@@ -17,15 +17,22 @@ export interface Preview { items: PreviewItem[]; summary: Record<Action, number>
  * Pure, read-only: decides what WOULD happen for each record. It has no Notion client, so it cannot write.
  * Every record gets exactly one outcome; nothing is dropped silently.
  */
+/** Library IDs already issued by the Notion library (`NTN-` from Notion, `STG-` from staging). */
+export const NOTION_ORIGIN = /^(NTN|STG)-\d+$/;
+
 export function buildPreview(records: SyncRecord[], d: PreviewDeps): Preview {
   const maxAge = d.maxSnapshotAgeMs ?? 60 * 60 * 1000;
   const items = records.map((r): PreviewItem => {
-    const base = { recordId: r.id, warnings: [], sourceRef: { paths: r.sources.map((s) => s.path).filter(Boolean) as string[], urls: r.sources.map((s) => s.url).filter(Boolean) as string[] } };
+    const base = { recordId: r.id, title: r.title, warnings: [], sourceRef: { paths: r.sources.map((s) => s.path).filter(Boolean) as string[], urls: r.sources.map((s) => s.url).filter(Boolean) as string[] } };
     const item = (action: Action, reason: string, extra: Partial<PreviewItem> = {}): PreviewItem => ({ ...base, action, reason, ...extra });
 
     const route = routeRecord(r);
     if (route.kind === "not_eligible") return item("not_eligible", route.reason);
     if (route.kind === "needs_destination_decision") return item("needs_destination_decision", `${route.reason} (candidates: ${route.candidates.join(", ")})`);
+
+    // Records that came from the Notion library itself already have its Library ID; never propose a second copy.
+    const origin = route.destination === "prompt_library" ? r.sources.map((s) => s.externalId ?? "").find((id) => NOTION_ORIGIN.test(id)) : undefined;
+    if (origin) return item("skip_exists", `originates from the Notion library (Library ID ${origin})`, { destination: route.destination, libraryId: origin });
 
     const dest = d.destinations.find((x) => x.key === route.destination);
     if (!dest) return item("blocked", `no destination configured for ${route.destination}`, { destination: route.destination });

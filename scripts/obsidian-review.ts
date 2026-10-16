@@ -1,7 +1,8 @@
 // node --import tsx scripts/obsidian-review.ts <vault> > docs/obsidian-extract-review.md   (read-only on the vault)
+import { readFileSync as readCfg } from "node:fs";
 import { scanVault, toImportItems } from "../src/import/obsidian/scan.js";
 
-const res = await scanVault(process.argv[2]!);
+const res = await scanVault(process.argv[2]!, {}, JSON.parse(readCfg("config/obsidian.json", "utf8")));
 const items = res.notes.flatMap((n) => toImportItems("mabbitopia", n)).sort((a, b) => a.sourceLocator!.localeCompare(b.sourceLocator!));
 const cell = (s: string) => s.replace(/\s+/g, " ").replace(/\|/g, "\\|").trim();
 const out = [

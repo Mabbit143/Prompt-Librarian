@@ -1,6 +1,7 @@
 // Read-only: node --import tsx scripts/obsidian-dry-run.ts <vault-path> [--save-manifest]
 // Writes nothing to the vault. The manifest (if saved) goes to ./.local-obsidian-manifest.json in this repo.
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
+import { readFileSync as readCfg } from "node:fs";
 import { scanVault, toImportItems, type Manifest } from "../src/import/obsidian/scan.js";
 import { contentHash } from "../src/core/normalize.js";
 
@@ -8,7 +9,7 @@ const root = process.argv[2]!;
 const MANIFEST = ".local-obsidian-manifest.json";
 const prev: Manifest = existsSync(MANIFEST) ? JSON.parse(readFileSync(MANIFEST, "utf8")) : {};
 const t0 = Date.now();
-const res = await scanVault(root, prev);
+const res = await scanVault(root, prev, JSON.parse(readCfg("config/obsidian.json", "utf8")));
 const items = res.notes.flatMap((n) => toImportItems("mabbitopia", n));
 const tally = (xs: string[]) => Object.fromEntries([...xs.reduce((m, x) => m.set(x, (m.get(x) ?? 0) + 1), new Map<string, number>())].sort((a, b) => b[1] - a[1]));
 const hashes = items.map((i) => contentHash(i.content));

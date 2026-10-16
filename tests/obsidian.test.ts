@@ -110,3 +110,21 @@ describe("scaffolding filters", () => {
     expect(parseNote(tree, "n").items).toHaveLength(0);
   });
 });
+
+describe("ignore list", () => {
+  it("matches exact paths and wildcards, and ignored notes are skipped but still tracked", async () => {
+    const { isIgnored } = await import("../src/import/obsidian/scan.js");
+    expect(isIgnored("A/b.md", ["A/b.md"])).toBe(true);
+    expect(isIgnored("A/b.md", ["A/c.md"])).toBe(false);
+    expect(isIgnored("A/x/y.md", ["A/*.md"])).toBe(false);
+    expect(isIgnored("A/x/y.md", ["A/**"])).toBe(true);
+    expect(isIgnored("Axb.md", ["A.b.md"])).toBe(false);
+    const root = mkdtempSync(join(tmpdir(), "vault-"));
+    writeFileSync(join(root, "keep.md"), note());
+    writeFileSync(join(root, "skip.md"), note());
+    const r = await scanVault(root, {}, { ignore: ["skip.md"] });
+    expect(Object.keys(r.manifest).sort()).toEqual(["keep.md", "skip.md"]);
+    expect(r.notes.map((n) => n.path)).toEqual(["keep.md"]);
+    expect(r.skipped).toEqual([{ path: "skip.md", reason: "ignored by config" }]);
+  });
+});

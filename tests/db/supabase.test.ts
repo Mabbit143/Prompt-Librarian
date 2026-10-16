@@ -79,3 +79,46 @@ describe("capture against Postgres", () => {
     expect(upd.error?.message).toMatch(/immutable/);
   });
 });
+
+describe("persistent AI budget (ai_usage)", () => {
+  let u: Awaited<ReturnType<typeof mkUser>>;
+  beforeAll(async () => {
+    u = await mkUser();
+    await SupabaseRepo.init(u.db, u.id);
+    const r = await u.db.from("users").update({ settings: { ai_budget_usd: 0.001 } }).eq("id", u.id).select();
+    expect(r.data).toHaveLength(1);
+  });
+  const spent = async () => {
+    const { data } = await u.db.from("ai_usage").select("estimated_cost_usd");
+    return (data ?? []).reduce((t, r) => t + Number(r.estimated_cost_usd), 0);
+  };
+
+  it("blocks reservations past the cap, and release frees the room", async () => {
+    const { SupabaseBudget } = await import("../../src/server/supabaseBudget.js");
+    const { BudgetExceededError } = await import("../../src/core/budget.js");
+    const b = new SupabaseBudget(u.db, "classify", "gpt-6-luna");
+    const h1 = await b.reserve(0.0006);
+    await expect(b.reserve(0.0006)).rejects.toBeInstanceOf(BudgetExceededError);
+    await h1.release();
+    const h2 = await b.reserve(0.0006);
+    await h2.commit(0.0002, { inputTokens: 10, outputTokens: 5 });
+    expect(await spent()).toBeCloseTo(0.0002, 8);
+    const row = await u.db.from("ai_usage").select("status,input_tokens,output_tokens").single();
+    expect(row.data).toEqual({ status: "settled", input_tokens: 10, output_tokens: 5 });
+  });
+
+  it("concurrent reservations cannot jointly exceed the cap", async () => {
+    const { SupabaseBudget } = await import("../../src/server/supabaseBudget.js");
+    const b = new SupabaseBudget(u.db, "classify", "gpt-6-luna");
+    const results = await Promise.allSettled(Array.from({ length: 6 }, () => b.reserve(0.0003)));
+    // 0.0002 already settled; cap 0.001 leaves room for exactly two 0.0003 holds.
+    expect(results.filter((r) => r.status === "fulfilled")).toHaveLength(2);
+  });
+
+  it("clients cannot write or delete usage rows directly", async () => {
+    const ins = await u.db.from("ai_usage").insert({ owner_id: u.id, operation: "x", model: "m", estimated_cost_usd: 0 });
+    expect(ins.error).not.toBeNull();
+    const del = await u.db.from("ai_usage").delete().eq("owner_id", u.id).select();
+    expect(del.data ?? []).toHaveLength(0);
+  });
+});

@@ -1,7 +1,7 @@
 import { contentHash, normalizeContent, similarity } from "./normalize.js";
 import { applyRules } from "./rules.js";
 import { classifyWithRetry, type ModelCall } from "./classify.js";
-import type { Budget } from "./budget.js";
+import type { BudgetPort } from "./budget.js";
 import type { Classification } from "./taxonomy.js";
 
 export type FilingStatus = "filed" | "needs_review" | "inbox";
@@ -33,7 +33,7 @@ export class MemoryRepo implements Repo {
   async candidates(_text: string) { return this.rows; }
 }
 
-export interface CaptureDeps { repo: Repo; budget: Budget; model: ModelCall; newId: () => string; now: () => string; autoFileMinConfidence: number; nearDupThreshold?: number }
+export interface CaptureDeps { repo: Repo; budget: BudgetPort; model: ModelCall; newId: () => string; now: () => string; autoFileMinConfidence: number; nearDupThreshold?: number; estimateUsd?: number }
 export interface CaptureInput { content: string; title?: string; sourcePath?: string; sourceUrl?: string }
 export type CaptureOutcome = { status: FilingStatus | "duplicate"; recordId: string; category?: string; reason?: string };
 
@@ -63,7 +63,7 @@ export async function capture(input: CaptureInput, d: CaptureDeps): Promise<Capt
   }
 
   const rule = applyRules(norm);
-  const res = await classifyWithRetry(norm, d.model, d.budget);
+  const res = await classifyWithRetry(norm, d.model, d.budget, d.estimateUsd);
   if (res.ok) {
     const c = res.value;
     const disagree = !!rule?.category && rule.category !== c.primary_category;

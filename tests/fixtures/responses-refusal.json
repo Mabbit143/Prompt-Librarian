@@ -1,0 +1,24 @@
+{
+  "_note": "SYNTHETIC: shaped after the documented Responses API format, not recorded from a live call.",
+  "response": {
+    "id": "resp_fixture_2",
+    "status": "completed",
+    "model": "gpt-6-luna",
+    "output": [
+      {
+        "type": "message",
+        "role": "assistant",
+        "content": [
+          {
+            "type": "refusal",
+            "refusal": "I cannot help with that."
+          }
+        ]
+      }
+    ],
+    "usage": {
+      "input_tokens": 700,
+      "output_tokens": 12
+    }
+  }
+}

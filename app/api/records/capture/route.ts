@@ -1,7 +1,9 @@
 import { randomUUID } from "node:crypto";
 import { z } from "zod";
 import { capture } from "../../../../src/core/capture";
-import { Budget } from "../../../../src/core/budget";
+import OpenAI from "openai";
+import { SupabaseBudget } from "../../../../src/server/supabaseBudget";
+import { openaiClassifier, estimateUsd } from "../../../../src/server/openaiClassifier";
 import { SupabaseRepo } from "../../../../src/server/supabaseRepo";
 import { unconfiguredModel } from "../../../../src/server/model";
 import { getUserClient } from "../../../../src/server/auth";
@@ -35,11 +37,12 @@ export async function POST(req: Request) {
 
   try {
     const repo = await SupabaseRepo.init(auth.db, auth.user.id);
+    const model = process.env.OPENAI_API_KEY ? openaiClassifier(new OpenAI({ apiKey: process.env.OPENAI_API_KEY })) : unconfiguredModel;
     // Capture is naturally idempotent: identical text maps to the same record via its content hash.
     const out = await capture(
       { content: body.data.content, title: body.data.title, sourceUrl: body.data.sourceUrl, sourcePath: body.data.sourcePath },
-      // The budget is per-request until ai_usage-backed accounting lands; harmless while the model is unconfigured.
-      { repo, budget: new Budget(5, 3), model: unconfiguredModel, newId: randomUUID, now: () => new Date().toISOString(), autoFileMinConfidence: 0.85 },
+      // Without OPENAI_API_KEY the stub throws, so captures are saved and queued for review.
+      { repo, budget: new SupabaseBudget(auth.db, "classify", "gpt-6-luna"), model, estimateUsd: estimateUsd("gpt-6-luna", body.data.content.length), newId: randomUUID, now: () => new Date().toISOString(), autoFileMinConfidence: 0.85 },
     );
     return Response.json({ success: true, data: out });
   } catch (e) {

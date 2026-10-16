@@ -1,0 +1,24 @@
+{
+  "_note": "SYNTHETIC: shaped after the documented Responses API format, not recorded from a live call.",
+  "response": {
+    "id": "resp_fixture_1",
+    "status": "completed",
+    "model": "gpt-6-luna",
+    "output": [
+      {
+        "type": "message",
+        "role": "assistant",
+        "content": [
+          {
+            "type": "output_text",
+            "text": "{\"record_type\":\"Prompt\",\"suggested_title\":\"Five-bullet paper summary\",\"primary_category\":\"Research & Analysis\",\"secondary_category\":null,\"prompt_family\":\"Utility\",\"output_type\":\"Research Summary\",\"tags\":[\"summary\"],\"topic_tags\":[\"Research & Evidence\"],\"confidence\":0.93,\"confidence_reason\":\"Clear summarization request\",\"potential_duplicate\":false,\"review_required\":false}"
+          }
+        ]
+      }
+    ],
+    "usage": {
+      "input_tokens": 812,
+      "output_tokens": 143
+    }
+  }
+}

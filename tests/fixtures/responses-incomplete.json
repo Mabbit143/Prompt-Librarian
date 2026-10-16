@@ -1,0 +1,27 @@
+{
+  "_note": "SYNTHETIC: shaped after the documented Responses API format, not recorded from a live call.",
+  "response": {
+    "id": "resp_fixture_3",
+    "status": "incomplete",
+    "incomplete_details": {
+      "reason": "max_output_tokens"
+    },
+    "model": "gpt-6-luna",
+    "output": [
+      {
+        "type": "message",
+        "role": "assistant",
+        "content": [
+          {
+            "type": "output_text",
+            "text": "{\"record_type\":\"Pro"
+          }
+        ]
+      }
+    ],
+    "usage": {
+      "input_tokens": 700,
+      "output_tokens": 600
+    }
+  }
+}

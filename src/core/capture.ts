@@ -20,7 +20,7 @@ export interface Repo {
   update(row: RecordRow): Promise<void>;
   addOccurrence(o: Occurrence): Promise<void>;
   addRelationship(r: Relationship): Promise<void>;
-  candidates(): Promise<RecordRow[]>;
+  candidates(text: string): Promise<RecordRow[]>;
 }
 
 export class MemoryRepo implements Repo {
@@ -30,7 +30,7 @@ export class MemoryRepo implements Repo {
   async update(r: RecordRow) { const i = this.rows.findIndex((x) => x.id === r.id); this.rows[i] = { ...r }; }
   async addOccurrence(o: Occurrence) { this.occurrences.push(o); }
   async addRelationship(r: Relationship) { this.relationships.push(r); }
-  async candidates() { return this.rows; }
+  async candidates(_text: string) { return this.rows; }
 }
 
 export interface CaptureDeps { repo: Repo; budget: Budget; model: ModelCall; newId: () => string; now: () => string; autoFileMinConfidence: number; nearDupThreshold?: number }
@@ -56,7 +56,7 @@ export async function capture(input: CaptureInput, d: CaptureDeps): Promise<Capt
   // Near duplicates are flagged, never merged. (Linear scan: fine for tests; production uses pgvector/trigram candidates.)
   const threshold = d.nearDupThreshold ?? 0.8;
   const norm = normalizeContent(input.content);
-  for (const other of await d.repo.candidates()) {
+  for (const other of await d.repo.candidates(norm)) {
     if (other.id === row.id) continue;
     const score = similarity(norm, other.originalContent);
     if (score >= threshold) await d.repo.addRelationship({ a: row.id, b: other.id, type: "near_duplicate", score });

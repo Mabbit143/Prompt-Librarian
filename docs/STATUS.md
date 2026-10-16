@@ -37,9 +37,11 @@ Input: `Downloads\Prompt Library - Prompt Library.csv`, an export dated 2026-10-
 | Deterministic rules | done, 5 placeholder rules (2 assert a category, 3 add topic tags only) |
 | Classifier retry + validation + budget reservation | done, tested with a fake model |
 | Capture pipeline (save-first, exact dup, near-dup flag, review routing) | done, in-memory repo, 10 tests pass |
-| Postgres schema, RLS, FTS, pgvector | written, **never run** against a database |
-| OpenAI adapter | not started (model IDs unverified) |
-| Supabase repo, Next.js app, auth, API, UI | not started |
+| Postgres schema (0001), trigram near-dup prefilter (0002), RLS, FTS, pgvector | applied to a local Supabase (Docker) with no errors; 5 integration tests pass (`npm run test:db`): filing, exact-dup provenance, near-dup flag, review on model failure, RLS cross-user read/update/forged-insert blocked, immutable snapshots. Not applied to any hosted project |
+| OpenAI adapter | not started (model IDs unverified); the route uses a stub that throws, so every live capture is saved and lands in Needs Review ("classifier error"), never auto-filed |
+| Persistent budget (ai_usage-backed) | not started; the route builds a fresh in-memory Budget per request |
+| SupabaseRepo, Next.js 15 shell (sign-in + Quick Capture page), `POST /api/records/capture` (Zod, bearer/cookie auth, RLS-scoped client, 30/min limiter, structured errors) | done; `next build` passes; verified by curl against local stack (401, 400, capture, duplicate). The page UI was not clicked through in a browser |
+| Rest of the API (search, records, review, etc.), dashboard/library/review UI | not started |
 | CSV parser, Prompt Library sheet mapping (33 real columns), resumable idempotent import | done, 7 tests; mapping verified against 2 real rows only, never run on the full 20k-row sheet |
 | Live Sheets/Notion fetch, Obsidian, JSON adapters | not started (import takes `string[][]`, so a Sheets API pull plugs in directly) |
 | 30k benchmark, classification accuracy sample, Notion writeback | not started |

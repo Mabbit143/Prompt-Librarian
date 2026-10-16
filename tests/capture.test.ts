@@ -93,3 +93,21 @@ describe("taxonomy", () => {
     expect(r.status).toBe("filed");
   });
 });
+
+describe("review proposals", () => {
+  it("queues uncertain classifications and near duplicates, but not confident filings", async () => {
+    const d = mk(ok(good({ confidence: 0.3 })));
+    await capture({ content: "vague thing" }, d);
+    expect(d.repo.reviews).toMatchObject([{ proposalType: "uncertain_classification", reason: "low confidence", proposedChange: { category: "Research & Analysis" } }]);
+    const c = mk(ok());
+    const base = "Write a detailed literature review of the topic with at least ten peer reviewed sources and a clear thesis statement now";
+    await capture({ content: base }, c);
+    await capture({ content: base + " please" }, c);
+    expect(c.repo.reviews.map((r) => r.proposalType)).toEqual(["potential_duplicate"]);
+  });
+  it("a failed classifier still queues a review without a proposal", async () => {
+    const d = mk(async () => { throw new Error("x"); });
+    await capture({ content: "keep me" }, d);
+    expect(d.repo.reviews).toMatchObject([{ proposalType: "uncertain_classification", reason: "classifier error", proposedChange: undefined }]);
+  });
+});

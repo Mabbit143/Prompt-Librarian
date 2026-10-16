@@ -26,6 +26,7 @@ export class BulkSupabaseRepo implements Repo {
   async update(): Promise<void> { throw new Error("bulk repo does not update"); }
   async addOccurrence(o: Occurrence) { this.occ.push(o); }
   async addRelationship(_r: Relationship) {}
+  async addReview(): Promise<void> {}
   async candidates() { return []; }
 
   async flush() {

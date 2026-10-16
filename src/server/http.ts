@@ -18,3 +18,8 @@ export const zodMessage = (e: z.ZodError) => e.issues.map((i) => `${i.path.join(
 
 /** Query-string object from a request URL; repeated keys keep the last value. */
 export const queryOf = (req: Request) => Object.fromEntries(new URL(req.url).searchParams);
+
+/** Expected failure with a client-safe message and HTTP status. */
+export class HttpError extends Error {
+  constructor(readonly status: number, readonly code: string, message: string) { super(message); }
+}

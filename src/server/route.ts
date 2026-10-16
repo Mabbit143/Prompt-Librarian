@@ -1,7 +1,7 @@
 import { ZodError } from "zod";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { getUserClient } from "./auth";
-import { fail, ok, rateLimited, zodMessage } from "./http";
+import { HttpError, fail, ok, rateLimited, zodMessage } from "./http";
 import { BadFilterError, NotFoundError } from "./queries";
 
 /** Auth + rate limit + error mapping for read endpoints. `run` receives the caller's RLS-scoped client. */
@@ -12,6 +12,7 @@ export async function guard(req: Request, run: (db: SupabaseClient) => Promise<u
   try {
     return ok(await run(auth.db));
   } catch (e) {
+    if (e instanceof HttpError) return fail(e.status, e.code, e.message);
     if (e instanceof ZodError) return fail(400, "invalid_input", zodMessage(e));
     if (e instanceof BadFilterError) return fail(400, "invalid_filter", e.message);
     if (e instanceof NotFoundError) return fail(404, "not_found", e.message);

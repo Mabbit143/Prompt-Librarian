@@ -20,11 +20,17 @@ export interface Repo {
   update(row: RecordRow): Promise<void>;
   addOccurrence(o: Occurrence): Promise<void>;
   addRelationship(r: Relationship): Promise<void>;
+  addReview(p: ReviewProposal): Promise<void>;
   candidates(text: string): Promise<RecordRow[]>;
+}
+export interface ReviewProposal {
+  recordId: string; proposalType: "uncertain_classification" | "potential_duplicate";
+  proposedChange?: Record<string, unknown>; originalValue?: Record<string, unknown>; confidence?: number; reason: string;
 }
 
 export class MemoryRepo implements Repo {
-  rows: RecordRow[] = []; occurrences: Occurrence[] = []; relationships: Relationship[] = [];
+  rows: RecordRow[] = []; occurrences: Occurrence[] = []; relationships: Relationship[] = []; reviews: ReviewProposal[] = [];
+  async addReview(p: ReviewProposal) { this.reviews.push(p); }
   async findByHash(h: string) { return this.rows.find((r) => r.contentHash === h); }
   async insert(r: RecordRow) { this.rows.push({ ...r }); }
   async update(r: RecordRow) { const i = this.rows.findIndex((x) => x.id === r.id); this.rows[i] = { ...r }; }
@@ -59,7 +65,13 @@ export async function capture(input: CaptureInput, d: CaptureDeps): Promise<Capt
   for (const other of await d.repo.candidates(norm)) {
     if (other.id === row.id) continue;
     const score = similarity(norm, other.originalContent);
-    if (score >= threshold) await d.repo.addRelationship({ a: row.id, b: other.id, type: "near_duplicate", score });
+    if (score >= threshold) {
+      await d.repo.addRelationship({ a: row.id, b: other.id, type: "near_duplicate", score });
+      await d.repo.addReview({
+        recordId: row.id, proposalType: "potential_duplicate", confidence: score, reason: `similarity ${score.toFixed(2)}`,
+        proposedChange: { record_a_id: row.id, record_b_id: other.id, relationship_type: "near_duplicate", score },
+      });
+    }
   }
 
   const rule = applyRules(norm);
@@ -74,11 +86,22 @@ export async function capture(input: CaptureInput, d: CaptureDeps): Promise<Capt
       reviewReason: confident ? undefined : disagree ? `rule/model disagree (${rule!.rule})` : "low confidence",
     };
     await d.repo.update(out);
+    if (!confident) {
+      await d.repo.addReview({
+        recordId: row.id, proposalType: "uncertain_classification", confidence: c.confidence, reason: out.reviewReason!,
+        proposedChange: { category: c.primary_category, record_type: c.record_type, title: c.suggested_title },
+        originalValue: { filing_status: "inbox" },
+      });
+    }
     return { status: out.filingStatus, recordId: row.id, category: out.category, reason: out.reviewReason };
   }
 
   // Model unavailable or invalid: a rule hit still yields a reviewable category; otherwise it stays queued.
   const out: RecordRow = { ...row, filingStatus: "needs_review", category: rule?.category, reviewReason: `classifier ${res.reason}` };
   await d.repo.update(out);
+  await d.repo.addReview({
+    recordId: row.id, proposalType: "uncertain_classification", reason: out.reviewReason!,
+    proposedChange: rule?.category ? { category: rule.category } : undefined, originalValue: { filing_status: "inbox" },
+  });
   return { status: "needs_review", recordId: row.id, category: out.category, reason: out.reviewReason };
 }

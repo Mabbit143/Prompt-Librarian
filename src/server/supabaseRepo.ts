@@ -1,5 +1,5 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
-import type { Occurrence, RecordRow, Relationship, Repo } from "../core/capture.js";
+import type { Occurrence, RecordRow, Relationship, Repo, ReviewProposal } from "../core/capture.js";
 import { CATEGORIES } from "../core/taxonomy.js";
 
 /** Supabase-backed Repo. Uses the caller's JWT client, so Row Level Security applies to every query. */
@@ -75,6 +75,14 @@ export class SupabaseRepo implements Repo {
     const { error } = await this.db.from("record_relationships").upsert(
       { record_a_id: r.a, record_b_id: r.b, relationship_type: r.type, similarity_score: r.score, detection_method: "trigram+shingle" },
       { onConflict: "record_a_id,record_b_id,relationship_type", ignoreDuplicates: true });
+    this.throwIf(error);
+  }
+
+  async addReview(p: ReviewProposal) {
+    const { error } = await this.db.from("review_items").insert({
+      record_id: p.recordId, proposal_type: p.proposalType, proposed_change_json: p.proposedChange ?? null,
+      original_value_json: p.originalValue ?? null, confidence: p.confidence ?? null, reason: p.reason,
+    });
     this.throwIf(error);
   }
 

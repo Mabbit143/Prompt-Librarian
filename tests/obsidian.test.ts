@@ -101,3 +101,12 @@ describe("vault scan", () => {
     expect(again).toMatchObject({ added: 0, linkedDuplicates: 0, unchanged: 1 });
   });
 });
+
+describe("scaffolding filters", () => {
+  it("skips Templater templates and folder-tree blocks", () => {
+    const tpl = parseNote("---\ntype: prompt\n---\n# <% tp.file.title %>\n\n## Prompt\n\nPlaceholder text that is long enough to pass the length check for notes.\n", "Prompt");
+    expect(tpl.items).toHaveLength(0);
+    const tree = "# Prompts\n\n```\nMabbitopia/\n├── RookeryBrain/ with a long enough listing of folders and files to count as words here\n└── Another folder name and more words so this is clearly longer than eighty characters\n```\n";
+    expect(parseNote(tree, "n").items).toHaveLength(0);
+  });
+});

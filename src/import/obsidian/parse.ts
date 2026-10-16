@@ -18,6 +18,8 @@ const MIN_CHARS = 80, MIN_WORDS = 12, MIN_CALLOUT_CHARS = 40;
 
 // Task/checklist scaffolds ("- [ ] ...") are templates for notes, not prompts.
 const isChecklist = (c: string) => /^\s*[-*] \[[ xX]\]/.test(c);
+// Templater placeholders (<% ... %>) and folder-tree drawings are scaffolding or output, not prompts.
+const isNotProse = (c: string) => /<%[-_]?[\s\S]*?%>/.test(c) || /[├└│]──/.test(c);
 const fp = (s: string) => contentHash(s).slice(0, 16);
 const linksIn = (s: string) => [...new Set([...s.matchAll(WIKI)].map((m) => m[1]!.trim()))];
 
@@ -43,7 +45,7 @@ export function parseNote(raw: string, fileTitle: string): ParsedNote {
   const noteType = String(fm.type ?? "").toLowerCase();
 
   // A note explicitly typed prompt/template/idea is one record (its whole body); no block extraction.
-  if (["prompt", "template", "idea"].includes(noteType) && body.trim().length >= MIN_CALLOUT_CHARS) {
+  if (["prompt", "template", "idea"].includes(noteType) && body.trim().length >= MIN_CALLOUT_CHARS && !isNotProse(body)) {
     const type = noteType === "idea" ? "Idea" : noteType === "template" ? "Template" : "Prompt";
     const content = body.trim();
     return {
@@ -65,7 +67,7 @@ export function parseNote(raw: string, fileTitle: string): ParsedNote {
       let j = i + 1;
       while (j < lines.length && !new RegExp(`^\\s*${marker![0] === "`" ? "`" : "~"}{${marker!.length},}\\s*$`).test(lines[j]!)) j++;
       const content = lines.slice(i + 1, j).join("\n").trim();
-      if (PLAIN_LANGS.has(lang!.toLowerCase()) && content.length >= MIN_CHARS && content.split(/\s+/).length >= MIN_WORDS && !/^[\[{<]/.test(content) && !isChecklist(content)) {
+      if (PLAIN_LANGS.has(lang!.toLowerCase()) && content.length >= MIN_CHARS && content.split(/\s+/).length >= MIN_WORDS && !/^[\[{<]/.test(content) && !isChecklist(content) && !isNotProse(content)) {
         const prev = lines.slice(Math.max(0, i - 3), i).join(" ");
         if (/prompt/i.test(headingPath()) || CONTEXT_WORDS.test(prev) || lang!.toLowerCase() === "prompt") {
           items.push({ rule: "fenced-in-prompt-context", recordType: /template/i.test(headingPath() + prev) ? "Template" : "Prompt",

@@ -46,6 +46,8 @@ export class SupabaseRepo implements Repo {
     const { error } = await this.db.from("records").insert({
       id: r.id, owner_id: this.ownerId, source_id: this.sourceId, original_title: r.originalTitle ?? null,
       original_content: r.originalContent, content_hash: r.contentHash, record_type: r.recordType ?? null,
+      // Provisional display title until a classifier or the user supplies one.
+      suggested_title: r.originalTitle ?? r.originalContent.trim().split(/\r?\n/)[0]!.slice(0, 80),
       filing_status: r.filingStatus, metadata_json: r.metadata ?? {},
     });
     this.throwIf(error);
@@ -54,7 +56,7 @@ export class SupabaseRepo implements Repo {
   async update(r: RecordRow) {
     const c = r.classification;
     const { error } = await this.db.from("records").update({
-      suggested_title: c?.suggested_title ?? null, record_type: c?.record_type ?? r.recordType ?? null,
+      ...(c ? { suggested_title: c.suggested_title } : {}), record_type: c?.record_type ?? r.recordType ?? null,
       primary_category_id: r.category ? this.catByName.get(r.category) ?? null : null,
       filing_status: r.filingStatus, classification_version: c?.classifier_version ?? null,
       metadata_json: { ...(r.metadata ?? {}), ...(c ? { classification: c } : {}), ...(r.reviewReason ? { reviewReason: r.reviewReason } : {}) },

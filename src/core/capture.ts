@@ -89,7 +89,7 @@ export async function capture(input: CaptureInput, d: CaptureDeps): Promise<Capt
     if (!confident) {
       await d.repo.addReview({
         recordId: row.id, proposalType: "uncertain_classification", confidence: c.confidence, reason: out.reviewReason!,
-        proposedChange: { category: c.primary_category, record_type: c.record_type, title: c.suggested_title },
+        proposedChange: { category: c.primary_category, record_type: c.record_type, title: c.suggested_title, ...(rule?.category ? { rule_category: rule.category } : {}) },
         originalValue: { filing_status: "inbox" },
       });
     }

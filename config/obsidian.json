@@ -1,5 +1,7 @@
 {
   "ignore": [
-    "RookeryBrain/07_Archive_Rescue/Rescue-Instructions.md"
+    "RookeryBrain/07_Archive_Rescue/Rescue-Instructions.md",
+    "RookeryBrain/99_ARCHIVE/**",
+    "WorkSpace/Noble Consulting/Running-Notes.md"
   ]
 }

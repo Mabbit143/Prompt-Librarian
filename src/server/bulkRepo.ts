@@ -41,7 +41,7 @@ export class BulkSupabaseRepo implements Repo {
     }
     if (this.occ.length) {
       const { error } = await this.db.from("record_occurrences").insert(this.occ.map((o) => ({
-        record_id: o.recordId, source_id: this.sourceId, source_path: o.sourcePath ?? null, source_url: o.sourceUrl ?? null,
+        record_id: o.recordId, source_id: this.sourceId, external_record_id: o.externalId ?? null, source_path: o.sourcePath ?? null, source_url: o.sourceUrl ?? null,
         first_seen_at: o.capturedAt, last_seen_at: o.capturedAt,
       })));
       if (error) throw new Error(`occurrences insert: ${error.message}`);

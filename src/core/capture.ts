@@ -10,7 +10,7 @@ export interface RecordRow {
   filingStatus: FilingStatus; classification?: Classification; category?: string; reviewReason?: string;
   recordType?: string; metadata?: Record<string, unknown>;
 }
-export interface Occurrence { recordId: string; sourcePath?: string; sourceUrl?: string; capturedAt: string }
+export interface Occurrence { recordId: string; externalId?: string; sourcePath?: string; sourceUrl?: string; capturedAt: string }
 export interface Relationship { a: string; b: string; type: "exact_duplicate" | "near_duplicate"; score: number }
 
 /** Storage port. The Supabase implementation lives behind this; tests use the in-memory one. */

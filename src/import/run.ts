@@ -34,7 +34,7 @@ export async function runImport(items: ImportItem[], d: ImportDeps, startIndex =
       if (seen.hash === hash) st.unchanged++;
       else st.conflicts.push({ externalId: it.externalId, recordId: seen.recordId });
     } else {
-      const occ = { sourcePath: it.sourceLocator, sourceUrl: it.sourceUrl, capturedAt: d.now() };
+      const occ = { externalId: it.externalId, sourcePath: it.sourceLocator, sourceUrl: it.sourceUrl, capturedAt: d.now() };
       const existing = await d.repo.findByHash(hash);
       if (existing) {
         await d.repo.addOccurrence({ recordId: existing.id, ...occ });

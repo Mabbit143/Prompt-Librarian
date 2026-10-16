@@ -33,8 +33,8 @@ Input: `Downloads\Prompt Library - Prompt Library.csv`, an export dated 2026-10-
 | Item | State |
 |---|---|
 | Normalization, hashing, near-dup similarity | done, tested |
-| Taxonomy schema (strict Zod) | done, provisional labels |
-| Deterministic rules | done, 5 placeholder rules |
+| Taxonomy schema (strict Zod) | done, seeded from the 19 existing categories; spec labels are optional topic tags |
+| Deterministic rules | done, 5 placeholder rules (2 assert a category, 3 add topic tags only) |
 | Classifier retry + validation + budget reservation | done, tested with a fake model |
 | Capture pipeline (save-first, exact dup, near-dup flag, review routing) | done, in-memory repo, 10 tests pass |
 | Postgres schema, RLS, FTS, pgvector | written, **never run** against a database |

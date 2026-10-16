@@ -4,7 +4,7 @@ import { Budget } from "../src/core/budget.js";
 import type { ModelCall } from "../src/core/classify.js";
 
 const good = (over: object = {}) => ({
-  record_type: "Prompt", suggested_title: "Summarize a paper", primary_category: "Research & Evidence",
+  record_type: "Prompt", suggested_title: "Summarize a paper", primary_category: "Research & Analysis",
   secondary_category: null, prompt_family: "Utility", output_type: "Research Summary", tags: ["summary"],
   topic_tags: ["papers"], confidence: 0.95, confidence_reason: "clear", potential_duplicate: false,
   review_required: false, classifier_version: "v1", ...over,
@@ -72,7 +72,24 @@ describe("capture", () => {
     expect(r.status).toBe("needs_review");
   });
   it("rule/model disagreement goes to review", async () => {
-    const r = await capture({ content: "Find a scholarship for me" }, mk(ok(good({ primary_category: "Anthropology" }))));
+    const r = await capture({ content: "Draft a lesson plan on fractions" }, mk(ok(good({ primary_category: "Finance & Money" }))));
     expect(r.status).toBe("needs_review");
+  });
+});
+
+describe("taxonomy", () => {
+  it("accepts the user's existing 19 categories and new record types", async () => {
+    const { CATEGORIES, ClassificationSchema } = await import("../src/core/taxonomy.js");
+    expect(CATEGORIES).toHaveLength(19);
+    expect(ClassificationSchema.safeParse(good({ record_type: "Prompt bundle", primary_category: "E-commerce" })).success).toBe(true);
+  });
+  it("rejects a spec label used as a category, but allows it as a topic tag", async () => {
+    const { ClassificationSchema } = await import("../src/core/taxonomy.js");
+    expect(ClassificationSchema.safeParse(good({ primary_category: "Anthropology" })).success).toBe(false);
+    expect(ClassificationSchema.safeParse(good({ topic_tags: ["Anthropology"] })).success).toBe(true);
+  });
+  it("topic-only rules do not force a review", async () => {
+    const r = await capture({ content: "Find a scholarship for me" }, mk(ok()));
+    expect(r.status).toBe("filed");
   });
 });

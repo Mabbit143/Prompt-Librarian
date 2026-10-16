@@ -66,7 +66,7 @@ export async function capture(input: CaptureInput, d: CaptureDeps): Promise<Capt
   const res = await classifyWithRetry(norm, d.model, d.budget);
   if (res.ok) {
     const c = res.value;
-    const disagree = !!rule && rule.category !== c.primary_category;
+    const disagree = !!rule?.category && rule.category !== c.primary_category;
     const confident = c.confidence >= d.autoFileMinConfidence && !c.review_required && !disagree;
     const out: RecordRow = {
       ...row, classification: c, category: c.primary_category,

@@ -1,0 +1,556 @@
+{
+ "dataSourceId": "4b40e2ad-27a1-8332-a2a8-07b66128a21c",
+ "name": "Prompt Engineering Dashboard",
+ "fetchedAt": "2026-10-16T10:26:43.207Z",
+ "verified": true,
+ "properties": {
+  "AI Tool": {
+   "type": "select",
+   "options": [
+    "ChatGPT",
+    "Claude",
+    "Midjourney",
+    "DALL-E",
+    "Grok",
+    "Other",
+    "Muse"
+   ]
+  },
+  "Category": {
+   "type": "select",
+   "options": [
+    "Content Creation",
+    "Code Generation",
+    "Research",
+    "Image Generation",
+    "Analysis",
+    "Other",
+    "Audio & Video",
+    "Business Strategy",
+    "Career & Freelancing",
+    "Coding & Data",
+    "Creative Writing",
+    "Design & Visuals",
+    "E-commerce",
+    "Finance & Money",
+    "Health & Wellbeing",
+    "Home & Lifestyle",
+    "Marketing & Sales",
+    "Productivity & Systems",
+    "Prompt Engineering",
+    "Relationships & Parenting",
+    "Research & Analysis",
+    "Social Media",
+    "Teaching & Learning",
+    "Travel & Events",
+    "Writing & Editing"
+   ]
+  },
+  "Channels": {
+   "type": "multi_select",
+   "options": [
+    "Not specified",
+    "Podcast",
+    "Email",
+    "Events",
+    "Blog / Website",
+    "Facebook",
+    "YouTube",
+    "Instagram",
+    "X / Twitter",
+    "LinkedIn",
+    "Threads",
+    "TikTok",
+    "Print",
+    "Pinterest",
+    "Etsy",
+    "Amazon",
+    "Gumroad",
+    "Fiverr",
+    "eBay",
+    "Shopify",
+    "SMS",
+    "Upwork",
+    "Reddit"
+   ]
+  },
+  "Date Tested": {
+   "type": "date"
+  },
+  "Improvement Notes": {
+   "type": "text"
+  },
+  "Inputs": {
+   "type": "text"
+  },
+  "Instructions": {
+   "type": "text"
+  },
+  "Instructions 2": {
+   "type": "text"
+  },
+  "Instructions 3": {
+   "type": "text"
+  },
+  "Library ID": {
+   "type": "text"
+  },
+  "Notes": {
+   "type": "text"
+  },
+  "Occurrence Count": {
+   "type": "number"
+  },
+  "Original Category": {
+   "type": "text"
+  },
+  "Original Name": {
+   "type": "text"
+  },
+  "Output Quality": {
+   "type": "text"
+  },
+  "Output Type": {
+   "type": "select",
+   "options": [
+    "Audit",
+    "Script",
+    "Prompt Template",
+    "Research",
+    "Summary",
+    "Draft",
+    "Question Set",
+    "Research Brief",
+    "Study Guide",
+    "Workflow",
+    "Plan",
+    "Analyze",
+    "Ideas",
+    "Code",
+    "Design",
+    "Edit",
+    "Organize",
+    "Visual Brief",
+    "Run workflow",
+    "Strategy Plan",
+    "Checklist",
+    "Comparison",
+    "Decision Aid",
+    "Explanation",
+    "Idea Generator",
+    "Prompt collection",
+    "Template",
+    "Content Draft",
+    "Idea",
+    "Fragment",
+    "Source collection",
+    "Rubric",
+    "Rewrite",
+    "Outline",
+    "Email Sequence"
+   ]
+  },
+  "Parameters": {
+   "type": "multi_select",
+   "options": [
+    "Concise",
+    "Detailed",
+    "Formal",
+    "Casual",
+    "Max 500 Words",
+    "Creative"
+   ]
+  },
+  "Place": {
+   "type": "place"
+  },
+  "Prompt": {
+   "type": "text"
+  },
+  "Prompt 2": {
+   "type": "text"
+  },
+  "Prompt 3": {
+   "type": "text"
+  },
+  "Prompt 4": {
+   "type": "text"
+  },
+  "Prompt 5": {
+   "type": "text"
+  },
+  "Prompt 6": {
+   "type": "text"
+  },
+  "Prompt Name": {
+   "type": "title"
+  },
+  "Prompt Text": {
+   "type": "text"
+  },
+  "Purpose": {
+   "type": "text"
+  },
+  "Questions": {
+   "type": "text"
+  },
+  "Record Type": {
+   "type": "select",
+   "options": [
+    "Prompt",
+    "Workflow",
+    "Prompt bundle",
+    "Idea",
+    "Prompt fragment",
+    "Reference"
+   ]
+  },
+  "Required Context": {
+   "type": "text"
+  },
+  "Review": {
+   "type": "select",
+   "options": [
+    "Ready",
+    "Needs content review",
+    "Source only"
+   ]
+  },
+  "Search Terms": {
+   "type": "text"
+  },
+  "Source IDs": {
+   "type": "text"
+  },
+  "Source Locator": {
+   "type": "text"
+  },
+  "Source URL": {
+   "type": "url"
+  },
+  "Status": {
+   "type": "status"
+  },
+  "Subcategory": {
+   "type": "select",
+   "options": [
+    "Audio overviews",
+    "Podcasts",
+    "Presentations",
+    "Video production",
+    "Video scripts",
+    "Voice & music",
+    "Business validation & plans",
+    "Customer experience",
+    "Decisions & risk",
+    "Operations & growth",
+    "Products & offers",
+    "Real estate",
+    "SaaS businesses",
+    "Applications & resumes",
+    "Client acquisition",
+    "Client management",
+    "Interviews",
+    "Job search & networking",
+    "Pricing & negotiation",
+    "Software development",
+    "Spreadsheets & data",
+    "Characters & dialogue",
+    "Characters & worlds",
+    "Plots & premises",
+    "Plots & scenes",
+    "Worldbuilding",
+    "Branding & layouts",
+    "Comics & illustration",
+    "Diagrams & data visualization",
+    "Image generation",
+    "Photography",
+    "Visual styles & fragments",
+    "Amazon selling",
+    "Commerce strategy",
+    "eBay selling",
+    "Etsy selling",
+    "Inventory & fulfillment",
+    "Print-on-demand",
+    "Product listings",
+    "Budget & debt",
+    "Income & monetization",
+    "Saving & investing",
+    "Tax & insurance",
+    "Fitness & training",
+    "Mental wellbeing",
+    "Mindfulness",
+    "Self-care & stress",
+    "Sleep & recovery",
+    "Cooking & food",
+    "DIY & home",
+    "Personal development",
+    "Sustainable living",
+    "Advertising & campaigns",
+    "Analytics & experiments",
+    "Audience & positioning",
+    "Email marketing",
+    "Influencer & affiliate",
+    "Leads & outreach",
+    "Marketing & sales strategy",
+    "SEO & search content",
+    "Automation & workflows",
+    "Goals & habits",
+    "Knowledge management",
+    "Projects & planning",
+    "Workflows & automation",
+    "AI workflows",
+    "Grounding & verification",
+    "Prompt design",
+    "Prompt design & refinement",
+    "Prompt evaluation & testing",
+    "Dating",
+    "Parenting",
+    "Relationships & communication",
+    "Critical thinking",
+    "Evidence & synthesis",
+    "Research ethics & access",
+    "Research planning",
+    "Source evaluation",
+    "Analytics & growth",
+    "Carousels & posts",
+    "Community & engagement",
+    "Content calendars",
+    "Content planning",
+    "Hooks & captions",
+    "Platform strategy",
+    "Social commerce",
+    "Assessment & rubrics",
+    "Course design",
+    "Explainers & tutoring",
+    "Lesson & curriculum design",
+    "Study & exam prep",
+    "Study systems",
+    "Digital nomad living",
+    "Travel planning",
+    "Weddings",
+    "Blogs & articles",
+    "Brand messaging",
+    "Drafting & revision",
+    "Editing & voice",
+    "Email & newsletters",
+    "Framing & persuasion",
+    "Headlines & calls to action",
+    "Persuasive copy",
+    "PR & press copy",
+    "Scripts",
+    "Web & SEO copy"
+   ]
+  },
+  "Success Rating": {
+   "type": "select",
+   "options": [
+    "1 (Poor)",
+    "2 (Fair)",
+    "3 (Good)",
+    "4 (Great)",
+    "5 (Excellent)"
+   ]
+  },
+  "Tags": {
+   "type": "multi_select",
+   "options": [
+    "podcasts",
+    "source evaluation",
+    "study",
+    "assessment",
+    "pricing",
+    "audience research",
+    "business planning",
+    "photography",
+    "interviews",
+    "coding",
+    "characters",
+    "music",
+    "knowledge management",
+    "automation",
+    "sales",
+    "storytelling",
+    "voice",
+    "hooks",
+    "critical thinking",
+    "fitness",
+    "time management",
+    "lesson planning",
+    "grounding",
+    "brand voice",
+    "email",
+    "analytics",
+    "worldbuilding",
+    "calls to action",
+    "lead generation",
+    "customer experience",
+    "budgeting",
+    "DIY",
+    "video",
+    "influencer marketing",
+    "market research",
+    "personal development",
+    "SEO",
+    "images",
+    "habits",
+    "affiliate marketing",
+    "paid advertising",
+    "digital products",
+    "relationships",
+    "presentations",
+    "income",
+    "career",
+    "events",
+    "mindfulness",
+    "stress & self-care",
+    "travel",
+    "graphic design",
+    "print-on-demand",
+    "nonprofit",
+    "A/B testing",
+    "headlines",
+    "content repurposing",
+    "spreadsheets",
+    "investing",
+    "project management",
+    "fiction",
+    "food",
+    "sustainability",
+    "real estate",
+    "games",
+    "parenting",
+    "data visualization",
+    "data analysis",
+    "deconstructing academia",
+    "citations",
+    "business strategy",
+    "sleep & recovery",
+    "prompt design",
+    "freelancing",
+    "decisions & risk",
+    "weddings",
+    "operations & growth",
+    "e-commerce",
+    "tax",
+    "products & offers",
+    "product listings",
+    "SaaS",
+    "mental wellbeing",
+    "career & freelancing",
+    "job search & networking",
+    "creative writing",
+    "plots & premises",
+    "plots & scenes",
+    "design & visuals",
+    "branding & layouts",
+    "comics & illustration",
+    "diagrams & data visualization",
+    "copywriting",
+    "hidden curriculum",
+    "visual styles & fragments",
+    "amazon selling",
+    "ebay selling",
+    "etsy selling",
+    "marketing & sales",
+    "advertising & campaigns",
+    "reentry",
+    "prompt engineering",
+    "grounding & verification",
+    "first-generation students",
+    "decolonizing research",
+    "research ethics",
+    "SMS",
+    "research & analysis",
+    "literature review",
+    "academic access",
+    "evidence & synthesis",
+    "research planning",
+    "social media",
+    "carousels & posts",
+    "community & engagement",
+    "content planning",
+    "hooks & captions",
+    "platform strategy",
+    "social commerce",
+    "teaching & learning",
+    "course design",
+    "lesson & curriculum design",
+    "study & exam prep",
+    "study systems",
+    "writing & editing",
+    "blogs & articles",
+    "brand messaging",
+    "drafting & revision",
+    "editing & voice",
+    "framing & persuasion",
+    "headlines & calls to action",
+    "persuasive copy",
+    "scripts"
+   ]
+  },
+  "Task": {
+   "type": "select",
+   "options": [
+    "Audit",
+    "Research",
+    "Write",
+    "Explain",
+    "Code",
+    "Plan",
+    "Analyze",
+    "Generate ideas",
+    "Design",
+    "Edit",
+    "Organize",
+    "Run workflow",
+    "Compare",
+    "Create template",
+    "Develop idea",
+    "Customize prompt",
+    "Reference"
+   ]
+  },
+  "Tools": {
+   "type": "multi_select",
+   "options": [
+    "NotebookLM",
+    "Lyria",
+    "Notion",
+    "Not specified",
+    "Excel",
+    "Claude",
+    "Perplexity",
+    "Midjourney",
+    "Runway",
+    "Canva",
+    "CapCut",
+    "ChatGPT",
+    "Figma",
+    "Flutter",
+    "JavaScript",
+    "React",
+    "Power BI",
+    "Zapier",
+    "Make",
+    "Google Drive",
+    "Gemini",
+    "Python",
+    "Obsidian",
+    "Zotero",
+    "Muse"
+   ]
+  },
+  "Use Status": {
+   "type": "select",
+   "options": [
+    "To try",
+    "Testing",
+    "Favorite"
+   ]
+  },
+  "Version": {
+   "type": "number"
+  }
+ }
+}

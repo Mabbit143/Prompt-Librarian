@@ -15,7 +15,7 @@
 
 **Obsidian** `C:\Users\mabbi\Desktop\Mabbitopia`: 579 `.md` files (find count). Top folders include 00 Inbox, 99 System, ChatGPT_MD, RookeryBrain, MabbitSpace, WorkSpace, Zotero. Other copies: `Desktop\Projects\Mabbitopia`, `Desktop\Resources\Mabbitopia Backups`, `Mabbitopia.zip`. Which one is canonical is unconfirmed. Not scanned yet.
 
-**Skills**: no "Prompt & Idea Classifier", "Notion Idea Librarian" or "Academic Voice Keeper" definition found in `~/.claude/skills` by name search. Not searched in Cowork output folders or the vault.
+**Skills**: not in `~/.claude/skills`, but the vault holds `SKILL.md` definitions under `RookeryBrain/03__Tools_And_Systems/AI Tools/` (and one under `Prompt Library/`) including `classify-prompts-ideas`, `organize-notion-ideas`, `check-source-credibility`, `check-assignment-compliance`, `write-mabbit-academic` (12 SKILL.md files in total). Not yet read: read `classify-prompts-ideas` before finalizing taxonomy and rules, and do not duplicate it.
 
 **Tooling**: Node v26, Docker present, no psql/Supabase CLI, no Python.
 
@@ -45,7 +45,8 @@ Input: `Downloads\Prompt Library - Prompt Library.csv`, an export dated 2026-10-
 | Bulk import into Postgres (`scripts/import-local.ts`, `BulkSupabaseRepo`), ranked search RPC (migration 0004) | done on local Supabase: 19,795 rows in 20.5 s; no DB-backed import ledger yet (script refuses a second run of the same file). Results in docs/BENCHMARKS.md: p95 under 500 ms at 19.8k and 30k, after the migration 0006 index fix, also under 500 ms at 100k (keyword p95 127 ms, browse p95 255 ms; synthetic rows, local machine) |
 | Rest of the API (search, records, review, etc.), dashboard/library/review UI | not started |
 | CSV parser, Prompt Library sheet mapping (33 real columns), resumable idempotent import | done, 7 tests; mapping verified against 2 real rows only, never run on the full 20k-row sheet |
-| Live Sheets/Notion fetch, Obsidian, JSON adapters | not started (import takes `string[][]`, so a Sheets API pull plugs in directly) |
+| Obsidian scanner/extractor (`src/import/obsidian`, `scripts/obsidian-dry-run.ts`) | done, 9 tests; read-only (only the manifest is written, into this repo, never the vault). Dry run on Mabbitopia: 581 notes in 0.7 s, 12 SKILL.md skipped, 57 prompt items from 569 notes (44 fenced-in-prompt-context, 13 frontmatter-type; 0 idea callouts, 10 unlabeled fenced blocks skipped), 3 notes with unparseable frontmatter, rescan with manifest parses 0. **Not yet imported into Postgres and extraction precision not reviewed by you** |
+| Live Sheets/Notion fetch, JSON adapter | not started (import takes `string[][]`, so a Sheets API pull plugs in directly) |
 | 30k benchmark, classification accuracy sample, Notion writeback | not started |
 
 Acceptance tests covered so far: 1, 2, 3, 4, 5, 6, 14, 15 (against the in-memory repo only).

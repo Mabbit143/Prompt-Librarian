@@ -7,3 +7,4 @@ next-env.d.ts
 supabase/.temp
 supabase/.branches
 .local-bench.json
+.local-obsidian-manifest.json

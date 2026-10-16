@@ -6,7 +6,7 @@ const N = 200, WARM = 20;
 const { db } = await localUser();
 const pct = (xs: number[], p: number) => [...xs].sort((a, b) => a - b)[Math.min(xs.length - 1, Math.ceil((p / 100) * xs.length) - 1)]!;
 const pick = <T>(xs: T[]) => xs[Math.floor(Math.random() * xs.length)]!;
-async function time(name: string, fn: () => Promise<{ error: { message: string } | null; data?: unknown }>) {
+async function time(name: string, fn: () => PromiseLike<{ error: { message: string } | null; data?: unknown }>) {
   const ms: number[] = [];
   for (let i = 0; i < N + WARM; i++) {
     const t = performance.now();

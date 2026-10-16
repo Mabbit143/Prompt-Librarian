@@ -19,6 +19,15 @@
 
 **Tooling**: Node v26, Docker present, no psql/Supabase CLI, no Python.
 
+## Dry run on the full Prompt Library (in memory, nothing written anywhere)
+
+Input: `Downloads\Prompt Library - Prompt Library.csv`, an export dated 2026-10-12 10:03. The live sheet was last modified 20:03 that day, so this is an earlier snapshot, not the live data. Run: `node --import tsx scripts/dry-run.ts <csv>`, 5.3 s.
+
+- 19,795 data rows, all mapped, 0 skipped, 0 repeated Library IDs, 0 exact-duplicate texts, so 19,795 records would be created. The sheet is already deduplicated; near-duplicates were not checked.
+- Record types: Prompt 19,596; Idea 89; Prompt fragment 63; Prompt bundle 23; Reference 17; Workflow 7. "Prompt fragment" and "Prompt bundle" are not in the spec's type list.
+- 19 existing categories; only "Prompt Engineering" matches the provisional taxonomy. Largest: Writing & Editing 7,289; E-commerce 2,569; Business Strategy 1,240; Audio & Video 1,152; Teaching & Learning 974; Relationships & Parenting 935; Travel & Events 767; Design & Visuals 711; Prompt Engineering 669; Home & Lifestyle 640; Marketing & Sales 583; Health & Wellbeing 518; Creative Writing 415; Finance & Money 380; Social Media 366; Productivity & Systems 274; Research & Analysis 234; Coding & Data 43; Career & Freelancing 36.
+- Consequence: the spec's subject categories (Anthropology, Public Policy, etc.) are not the user's current scheme. Before any auto-filing, seed `categories` from these 19 (plus the Category Guide tab) and decide how the spec's labels map onto them.
+
 ## Build state
 
 | Item | State |

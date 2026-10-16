@@ -31,7 +31,8 @@
 | Postgres schema, RLS, FTS, pgvector | written, **never run** against a database |
 | OpenAI adapter | not started (model IDs unverified) |
 | Supabase repo, Next.js app, auth, API, UI | not started |
-| Notion / Sheets / Obsidian / CSV adapters | not started (inventory only) |
+| CSV parser, Prompt Library sheet mapping (33 real columns), resumable idempotent import | done, 7 tests; mapping verified against 2 real rows only, never run on the full 20k-row sheet |
+| Live Sheets/Notion fetch, Obsidian, JSON adapters | not started (import takes `string[][]`, so a Sheets API pull plugs in directly) |
 | 30k benchmark, classification accuracy sample, Notion writeback | not started |
 
 Acceptance tests covered so far: 1, 2, 3, 4, 5, 6, 14, 15 (against the in-memory repo only).

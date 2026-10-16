@@ -8,6 +8,7 @@ export type FilingStatus = "filed" | "needs_review" | "inbox";
 export interface RecordRow {
   id: string; originalTitle?: string; originalContent: string; contentHash: string;
   filingStatus: FilingStatus; classification?: Classification; category?: string; reviewReason?: string;
+  recordType?: string; metadata?: Record<string, unknown>;
 }
 export interface Occurrence { recordId: string; sourcePath?: string; sourceUrl?: string; capturedAt: string }
 export interface Relationship { a: string; b: string; type: "exact_duplicate" | "near_duplicate"; score: number }

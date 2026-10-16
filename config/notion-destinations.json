@@ -1,13 +1,48 @@
 {
-  "_note": "Observed read-only on 2026-10-16. 'confirmed' must be set to true by the user before anything may be written there.",
+  "_note": "Observed read-only on 2026-10-16. 'confirmed' must be set to true by the user before anything may be written there. prompt_library confirmed by the user 2026-10-16 (destination and the LIBR- Library ID prefix); no writes have been made or enabled.",
   "libraryIdPrefix": "LIBR-",
   "destinations": [
-    { "key": "prompt_library", "name": "Prompt Engineering Dashboard", "dataSourceId": "4b40e2ad-27a1-8332-a2a8-07b66128a21c", "titleProperty": "Prompt Name", "identityProperty": "Library ID", "rowCount": 20051, "schemaSnapshot": "prompt-engineering-dashboard.json", "confirmed": false },
-    { "key": "da_idea_bank", "name": "DA Idea Bank", "dataSourceId": "4d6633d9-fdec-46ac-9ae6-92fc2a7f56da", "titleProperty": "Idea", "rowCount": 103, "schemaSnapshot": null, "confirmed": false, "note": "Column names seen via a row query; property types and options not yet fetched untruncated." },
-    { "key": "ideas_inbox", "name": "Ideas", "dataSourceId": "c190e2ad-27a1-83c0-9aa0-8796f95e533e", "titleProperty": "Name", "rowCount": 4, "schemaSnapshot": null, "confirmed": false, "note": "A second database named 'Ideas Box' (8d00e2ad-27a1-8286-bcd5-812c3f242d39) also exists; which one is the inbox is undecided." }
+    {
+      "key": "prompt_library",
+      "name": "Prompt Engineering Dashboard",
+      "dataSourceId": "4b40e2ad-27a1-8332-a2a8-07b66128a21c",
+      "titleProperty": "Prompt Name",
+      "identityProperty": "Library ID",
+      "rowCount": 20051,
+      "schemaSnapshot": "prompt-engineering-dashboard.json",
+      "confirmed": true
+    },
+    {
+      "key": "da_idea_bank",
+      "name": "DA Idea Bank",
+      "dataSourceId": "4d6633d9-fdec-46ac-9ae6-92fc2a7f56da",
+      "titleProperty": "Idea",
+      "rowCount": 103,
+      "schemaSnapshot": null,
+      "confirmed": false,
+      "note": "Column names seen via a row query; property types and options not yet fetched untruncated."
+    },
+    {
+      "key": "ideas_inbox",
+      "name": "Ideas",
+      "dataSourceId": "c190e2ad-27a1-83c0-9aa0-8796f95e533e",
+      "titleProperty": "Name",
+      "rowCount": 4,
+      "schemaSnapshot": null,
+      "confirmed": false,
+      "note": "A second database named 'Ideas Box' (8d00e2ad-27a1-8286-bcd5-812c3f242d39) also exists; which one is the inbox is undecided."
+    }
   ],
   "notDestinations": [
-    { "name": "Research Prompt Library", "dataSourceId": "e55be9c7-37b1-4dbe-9343-77a3a7603d1f", "rowCount": 998, "why": "Older library with a different Category scheme (e.g. 'Writing & Content') and title property 'Name'." },
-    { "name": "Content Planning Kanban", "why": "Downstream planning only; never an intake destination." }
+    {
+      "name": "Research Prompt Library",
+      "dataSourceId": "e55be9c7-37b1-4dbe-9343-77a3a7603d1f",
+      "rowCount": 998,
+      "why": "Older library with a different Category scheme (e.g. 'Writing & Content') and title property 'Name'."
+    },
+    {
+      "name": "Content Planning Kanban",
+      "why": "Downstream planning only; never an intake destination."
+    }
   ]
 }

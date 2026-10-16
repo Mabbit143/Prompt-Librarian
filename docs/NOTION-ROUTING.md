@@ -36,8 +36,8 @@ Provenance and the original text stay in Postgres; Notion is a mirror (as `organ
 
 ## Decisions needed from you
 
-1. Confirm `prompt_library` = Prompt Engineering Dashboard as the destination (set `confirmed` in `config/notion-destinations.json`).
-2. Confirm the `LIBR-` Library ID scheme, or give another.
+1. ~~Confirm `prompt_library` = Prompt Engineering Dashboard as the destination.~~ Confirmed by the user 2026-10-16 (`confirmed: true`; DA Idea Bank and Ideas stay `false`). Confirming it does not enable writes: there is no executor.
+2. ~~Confirm the `LIBR-` Library ID scheme.~~ Confirmed 2026-10-16.
 3. Pick the general ideas inbox: "Ideas" or "Ideas Box".
 4. Decide whether the 89 Idea rows already in the dashboard stay there.
 5. Allow new Notion select options (default: no) or keep blocking unknown values.

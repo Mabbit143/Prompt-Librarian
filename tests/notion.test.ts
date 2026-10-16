@@ -121,3 +121,11 @@ describe("read-back verification", () => {
     expect(snap.properties["Record Type"]!.options).toContain("Prompt fragment");
   });
 });
+
+describe("committed destination config", () => {
+  it("confirms only the prompt library; every other destination stays blocked", () => {
+    const confirmed = (cfg.destinations as Destination[]).filter((d) => d.confirmed).map((d) => d.key);
+    expect(confirmed).toEqual(["prompt_library"]);
+    expect(cfg.libraryIdPrefix).toBe("LIBR-");
+  });
+});
